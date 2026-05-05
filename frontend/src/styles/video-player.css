@@ -1,0 +1,49 @@
+/* video-player.css */
+
+.page-video-player {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fefefe;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.page-video-player h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.page-video-player p {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #555;
+}
+
+.page-video-player video {
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.page-video-player .buttons {
+  margin-top: 20px;
+}
+
+.page-video-player .btn-secondary {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.page-video-player .btn-secondary:hover {
+  background-color: #333;
+  color: #fff;
+}

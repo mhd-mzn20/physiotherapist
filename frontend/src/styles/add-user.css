@@ -1,0 +1,10 @@
+.page-add-user .form-container {
+  margin-top: 30px; /* pushes the form down */
+  border-top: 4px solid var(--primary);
+}
+
+
+.page-add-user {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(34, 197, 94, 0.08));
+}
+

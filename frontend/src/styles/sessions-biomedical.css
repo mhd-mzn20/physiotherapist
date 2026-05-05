@@ -1,0 +1,139 @@
+.page-sessions-biomedical {
+  border-top: 4px solid #60a5fa;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 45%);
+  border-radius: 18px;
+  padding: 28px 32px 36px;
+}
+  .page-sessions-biomedical {
+    border-top: 4px solid #3b82f6;
+     background: linear-gradient(180deg, #f8fbff 0%, #ffffff 45%);
+    border-radius: 22px;
+    padding: 30px 34px 40px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.1);
+  }
+
+  .page-sessions-biomedical h2 {
+    margin: 8px 0 18px;
+    font-size: 1.9rem;
+    color: #0f172a;
+    letter-spacing: 0.3px;
+  }
+
+  .page-sessions-biomedical p {
+    margin: 6px 0;
+    color: #334155;
+  }
+
+  .page-sessions-biomedical p strong {
+    color: #1d4ed8;
+  }
+
+  .page-sessions-biomedical table {
+    width: 100%;
+    margin-top: 18px;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+  }
+
+  .page-sessions-biomedical thead th {
+    text-align: left;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 14px 16px;
+  }
+
+  .page-sessions-biomedical tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1f2937;
+  }
+
+  .page-sessions-biomedical tbody tr {
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .page-sessions-biomedical tbody tr:hover {
+    background: #eff6ff;
+    transform: translateY(-1px);
+  }
+
+  .page-sessions-biomedical td:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .page-sessions-biomedical .action-btn {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 600;
+    color: #2563eb;
+    cursor: pointer;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    padding: 0;
+    transition: color 0.2s ease;
+  }
+
+  .page-sessions-biomedical .action-btn:hover {
+    color: #1d4ed8;
+  }
+
+  .page-sessions-biomedical .buttons {
+    margin-top: 20px;
+  }
+
+  .page-sessions-biomedical .btn-primary {
+    background: linear-gradient(120deg, #3b82f6, #2563eb);
+    color: #fff;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .page-sessions-biomedical .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.32);
+  }
+
+  @media (max-width: 900px) {
+    .page-sessions-biomedical {
+      padding: 22px 20px 28px;
+    }
+
+    .page-sessions-biomedical table,
+    .page-sessions-biomedical thead,
+    .page-sessions-biomedical tbody,
+    .page-sessions-biomedical th,
+    .page-sessions-biomedical td,
+    .page-sessions-biomedical tr {
+      display: block;
+    }
+
+    .page-sessions-biomedical thead {
+      display: none;
+    }
+
+    .page-sessions-biomedical tbody tr {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      padding: 14px;
+    }
+
+    .page-sessions-biomedical tbody td {
+      border-bottom: none;
+      padding: 8px 0;
+    }
+  }

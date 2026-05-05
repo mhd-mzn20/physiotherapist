@@ -1,0 +1,96 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.page-register {
+  flex: 1;
+  display: flex;
+  
+  justify-content: center;
+  margin-top: 3px;
+}
+
+.page-register .container {
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;
+  box-shadow: var(--shadow-md);
+}
+
+.page-register h2 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+}
+
+
+
+
+
+
+
+.page-register input:focus,
+.page-register select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.page-register input::placeholder {
+  color: var(--muted);
+}
+
+.page-register .buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.page-register .btn-primary {
+  flex: 1;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.page-register .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+}
+
+.page-register .btn-primary:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .page-register .container {
+    padding: 30px 20px;
+    width: 100%;
+  }
+
+  .page-register h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .page-register form {
+    gap: 14px;
+  }
+}

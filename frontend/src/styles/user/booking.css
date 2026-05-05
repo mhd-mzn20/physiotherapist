@@ -1,0 +1,189 @@
+.booking-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+.booking-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.booking-container h2 {
+    color: #2d3436;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+/* Date Selection Styling */
+.date-selection {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-selection label {
+    font-weight: 600;
+    color: #636e72;
+}
+
+.date-selection input {
+    padding: 12px 20px;
+    border: 2px solid #dfe6e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.date-selection input:focus {
+    border-color: #4834d4;
+}
+
+/* Time Grid Layout */
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.time-slot {
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #dfe6e9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: white;
+}
+
+.time-slot.available {
+    border-color: #a6e9d5;
+    color: #2d3436;
+}
+
+.time-slot.available:hover {
+    background-color: #e3fcef;
+    border-color: #4834d4;
+    transform: translateY(-3px);
+}
+
+.time-slot.unavailable {
+    background-color: #f1f2f6;
+    color: #b2bec3;
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+/* Selected State */
+.time-slot.selected {
+    background-color: #4834d4;
+    color: white;
+    border-color: #4834d4;
+    box-shadow: 0 4px 15px rgba(72, 52, 212, 0.3);
+}
+
+.status-text {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+/* Confirm Button */
+.confirm-booking-btn {
+    width: 100%;
+    padding: 18px;
+    background-color: #4834d4;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.confirm-booking-btn:hover:not(:disabled) {
+    background-color: #3c2bb3;
+    transform: translateY(-2px);
+}
+
+.confirm-booking-btn:disabled {
+    background-color: #b2bec3;
+    cursor: not-allowed;
+}
+.booking-layout {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto;
+    gap: 30px;
+    padding: 0 20px;
+}
+
+.booking-container {
+    flex: 2; /* Takes up more space */
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.selection-summary {
+    flex: 1; /* Sidebar style */
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+    border-top: 5px solid #4834d4;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f2f6;
+}
+
+.summary-item span {
+    color: #636e72;
+}
+
+.summary-item strong {
+    color: #2d3436;
+}
+
+/* Ensure booked/unavailable slots look "locked" */
+.time-slot.unavailable {
+    background-color: #f8f9fa;
+    border-color: #dfe6e9;
+    color: #b2bec3;
+    cursor: not-allowed;
+    pointer-events: none; /* User cannot click */
+    opacity: 0.6;
+}
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .time-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .booking-container {
+        margin: 20px;
+        padding: 20px;
+    }
+}

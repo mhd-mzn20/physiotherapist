@@ -1,0 +1,87 @@
+.page-biomedical {
+  border-top: 4px solid #3b82f6;
+  background: linear-gradient(180deg, #eff6ff 0%, #ffffff 45%);
+  border-radius: 18px;
+  padding: 28px 32px 36px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+}
+
+.page-biomedical h2 {
+  margin: 10px 0 18px;
+  font-size: 1.8rem;
+  color: #1f2937;
+}
+
+.page-biomedical p {
+  color: #4b5563;
+  margin: 6px 0;
+}
+
+.page-biomedical form {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 16px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.page-biomedical label {
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.page-biomedical input,
+.page-biomedical textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+  font-size: 0.98rem;
+}
+
+.page-biomedical textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.page-biomedical button[type='submit'] {
+  background: linear-gradient(120deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  outline: 2px solid rgba(37, 99, 235, 0.2);
+  outline-offset: 2px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.page-biomedical button[type='submit']:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.32);
+}
+
+.page-biomedical .back-btn {
+  display: inline-flex;
+  margin-top: 18px;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.page-biomedical .back-btn:hover {
+  color: #1d4ed8;
+}
+
+@media (max-width: 900px) {
+  .page-biomedical {
+    padding: 22px 20px 28px;
+  }
+}

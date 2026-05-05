@@ -1,0 +1,133 @@
+.page-portal {
+  border-top: 4px solid var(--primary);
+  
+}
+
+.portal-users {
+  margin-top: 24px;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 20px 22px 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+ 
+}
+
+.portal-users h3 {
+  margin: 0 0 14px;
+  text-align: left;
+  font-size: 1.4rem;
+  color: #0f172a;
+}
+
+.portal-users table {
+  margin-top: 0;
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.portal-users thead th {
+  text-align: left;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 14px 16px;
+}
+
+.portal-users tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1f2937;
+}
+
+.portal-users tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.portal-users tbody tr:hover {
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+
+.role-button {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.role-button:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.portal-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .portal-users {
+    padding: 18px;
+  }
+
+  .portal-users table,
+  .portal-users thead,
+  .portal-users tbody,
+  .portal-users th,
+  .portal-users td,
+  .portal-users tr {
+    display: block;
+  }
+
+  .portal-users thead {
+    display: none;
+  }
+
+  .portal-users tbody tr {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    padding: 14px;
+  }
+
+  .portal-users tbody td {
+    border-bottom: none;
+    padding: 8px 0;
+  }
+}
+
+.portal-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.portal-modal__content {
+  width: min(520px, 100%);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+
+.portal-modal__content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}

@@ -1,0 +1,136 @@
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import '../../styles/user/payment.css';
+
+const Payment = () => {
+    const { state } = useLocation();
+    const navigate = useNavigate();
+    const [method, setMethod] = useState('online');
+
+    // If a user refreshes or navigates here directly without booking data
+    if (!state) {
+        return (
+            <div className="payment-page">
+                <div className="error-card">
+                    <p>No booking session found. Please start over.</p>
+                    <button onClick={() => navigate('/find-physio')}>Go Back</button>
+                </div>
+            </div>
+        );
+    }
+
+ const handleFinalConfirm = async () => {
+    // Ensure you are getting idpatient correctly
+    const idPatient = localStorage.getItem('idpatient') || sessionStorage.getItem('idpatient');
+
+    const payload = {
+        idpatient: idPatient,
+        idUser: state.idUser,
+        idAvailability: state.idAvailability,
+        diagnostic: state.diagnostic,
+        appointment_time: state.time,
+        payment_method: method,
+        amount: 120.00,
+        injuryName: state.injuryName, 
+        injuryDate: state.injuryDate
+    };
+
+    try {
+        const res = await fetch('http://localhost:5001/api/confirm-booking-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) {
+            alert("Booking successful!");
+            navigate('/home');
+        } else {
+            alert("Error in booking process.");
+        }
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+    return (
+        <div className="payment-page">
+            <div className="payment-container">
+                
+                {/* Left Column: Summary */}
+                <div className="summary-info">
+                    <h2>Confirm & Pay</h2>
+                    
+                    <div className="summary-item">
+                        <strong>Specialist ID</strong>
+                        <p>#{state.idUser}</p>
+                    </div>
+
+                    <div className="summary-item">
+                        <strong>Appointment Date</strong>
+                        <p>{state.date}</p>
+                    </div>
+
+                    <div className="summary-item">
+                        <strong>Time Slot</strong>
+                        <p>{state.time.substring(0, 5)}</p>
+                    </div>
+
+                    <div className="summary-item">
+                        <strong>Reason for Visit</strong>
+                        <p>"{state.diagnostic}"</p>
+                    </div>
+
+                    <div className="total-cost-box">
+                        <span>Total Amount:</span>
+                        <h3>$120.00</h3>
+                    </div>
+                </div>
+
+                {/* Right Column: Payment & Confirm */}
+                <div className="payment-section">
+                    <h3>Select Payment Method</h3>
+                    
+                    <div className="payment-options">
+                        <label className={`method-card ${method === 'online' ? 'active' : ''}`}>
+                            <input 
+                                type="radio" 
+                                name="payment" 
+                                onChange={() => setMethod('online')} 
+                                checked={method === 'online'} 
+                            />
+                            <div className="method-text">
+                                <strong>Pay Online Now</strong>
+                                <span>Secure Credit/Debit Card payment</span>
+                            </div>
+                        </label>
+
+                        <label className={`method-card ${method === 'in-clinic' ? 'active' : ''}`}>
+                            <input 
+                                type="radio" 
+                                name="payment" 
+                                onChange={() => setMethod('in-clinic')} 
+                                checked={method === 'in-clinic'} 
+                            />
+                            <div className="method-text">
+                                <strong>Pay in Clinic</strong>
+                                <span>Pay at the front desk after the session</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button onClick={handleFinalConfirm} className="pay-btn">
+                        Confirm Booking
+                    </button>
+                    
+                    <p className="terms-text">
+                        By confirming, you agree to our booking terms and conditions.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    );
+};
+
+export default Payment;

@@ -1,0 +1,146 @@
+/* Base Page Styling */
+.payment-page {
+    background: linear-gradient(135deg, #e0f0f8 0%, #e0e8f8 40%, #e8f8f0 100%); /* Matches your background */
+    min-height: 100vh;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', 'Inter', sans-serif;
+}
+
+/* 1. Main Container (The Single Card) */
+.payment-container {
+    background: white;
+    width: 100%;
+    max-width: 900px;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    display: flex;
+    gap: 40px; /* Space between details and payment */
+    align-items: flex-start;
+}
+
+/* 2. Left Column: Details Summary */
+.summary-info {
+    flex: 1;
+    border-right: 1px solid #eee; /* Divider */
+    padding-right: 40px;
+}
+
+.summary-info h2 {
+    color: #2d3436;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    font-weight: 700;
+    margin-top: 0;
+}
+
+.summary-item {
+    margin-bottom: 20px;
+    color: #2d3436;
+}
+
+.summary-item strong {
+    display: block;
+    color: #636e72;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.summary-item p {
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* 3. Right Column: Payment Options and Button */
+.payment-section {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Radio Option Styling */
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-options label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 2px solid #dfe6e9;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.payment-options label:hover {
+    border-color: #4834d4;
+    background-color: #f8f7ff;
+}
+
+/* The Active (Selected) State */
+.payment-options label.active {
+    border-color: #4834d4;
+    background-color: #f8f7ff;
+    box-shadow: 0 4px 12px rgba(72, 52, 212, 0.1);
+}
+
+.payment-options input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #4834d4; /* Color of the radio circle */
+}
+
+/* Custom price text inside the label */
+.payment-options span.price {
+    font-size: 0.85rem;
+    color: #636e72;
+}
+
+/* 4. Action Button (The "Confirm Booking" Box) */
+.pay-btn {
+    width: 100%;
+    padding: 20px;
+    background-color: #4834d4; /* Solid Royal Purple */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
+    font-family: inherit;
+}
+
+.pay-btn:hover {
+    background-color: #3c2bb3;
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 800px) {
+    .payment-container {
+        flex-direction: column;
+        padding: 30px;
+    }
+    
+    .summary-info {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-right: 0;
+        padding-bottom: 30px;
+        width: 100%;
+    }
+}

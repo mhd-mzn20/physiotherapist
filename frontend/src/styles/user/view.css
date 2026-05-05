@@ -1,0 +1,83 @@
+.all-page {
+    background: #f8fafc;
+    min-height: 100vh;
+    padding-top: 20px;
+}
+.public-profile-container {
+    max-width: 1000px;
+    margin:  auto;
+    padding: 0 20px;
+   
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #4a90e2;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.profile-main-card {
+    background: white;
+    border-radius: 20px;
+    display: flex;
+    gap: 40px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.large-avatar {
+    width: 220px;
+    height: 220px;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.specialty-label {
+    background: #eef5ff;
+    color: #357abd;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.book-now-btn {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 20px;
+}
+
+.book-now-btn:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+}
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.detail-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+}
+
+.bio-text {
+    line-height: 1.8;
+    color: #555;
+}

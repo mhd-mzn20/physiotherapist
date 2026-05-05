@@ -1,0 +1,62 @@
+.res-page-container {
+    background: #f9f9f9;
+    min-height: 100vh;
+ 
+}
+
+.res-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    
+   
+    
+}
+
+.res-card {
+    background: #fff;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Dynamic Header Colors */
+.res-card-header { padding: 10px 15px; font-weight: bold; font-size: 1.1rem; }
+.res-card-header.accepted { background-color: #e6f4ea; color: #1e7e34; }
+.res-card-header.pending { background-color: #fff4e5; color: #b05d00; }
+.res-card-header.rejected { background-color: #fce8e8; color: #c62828; }
+.res-card-header.completed { background-color: #e8f0fe; color: #1967d2; }
+
+.physio-info { display: flex; gap: 15px; padding: 15px; }
+.physio-info img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+
+.res-details { padding: 0 15px; font-size: 0.9rem; line-height: 1.6; }
+
+.res-badge-row { 
+    padding: 15px; 
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+}
+
+.status-badge-inline {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.status-badge-inline.accepted { background: #1e7e34; color: white; }
+.status-badge-inline.pending { background: #b05d00; color: white; }
+
+.history-btn {
+    width: 100%;
+    padding: 10px;
+    background: #4a3aff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}

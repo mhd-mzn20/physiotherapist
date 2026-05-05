@@ -1,0 +1,130 @@
+.page-patients {
+  border-top: 4px solid #60a5fa;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 45%);
+  border-radius: 18px;
+  padding: 28px 32px 36px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.page-patients h2 {
+  margin: 10px 0 18px;
+  font-size: 1.8rem;
+  color: #0f172a;
+  letter-spacing: 0.2px;
+}
+
+.page-patients p strong {
+  color: #1d4ed8;
+}
+
+.page-patients .add-btn {
+  background: linear-gradient(120deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.page-patients .add-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.32);
+}
+
+.page-patients .filter-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+  margin: 8px 0 20px;
+  font-size: 0.98rem;
+}
+
+.page-patients table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+}
+
+.page-patients thead th {
+  text-align: left;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 14px 16px;
+}
+
+.page-patients tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1f2937;
+}
+
+.page-patients tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.page-patients tbody tr:hover {
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+
+.page-patients .list-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-patients .action-btn {
+  display: inline-block;
+  margin-right: 10px;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.page-patients .action-btn:hover {
+  color: #1d4ed8;
+}
+
+@media (max-width: 900px) {
+  .page-patients {
+    padding: 22px 20px 28px;
+  }
+
+  .page-patients table,
+  .page-patients thead,
+  .page-patients tbody,
+  .page-patients th,
+  .page-patients td,
+  .page-patients tr {
+    display: block;
+  }
+
+  .page-patients thead {
+    display: none;
+  }
+
+  .page-patients tbody tr {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    padding: 14px;
+  }
+
+  .page-patients tbody td {
+    border-bottom: none;
+    padding: 8px 0;
+  }
+}

@@ -1,0 +1,197 @@
+/* Container and Layout */
+.manage-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+.manage-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.manage-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.manage-header h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+/* Date Selector Styling */
+.date-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 10px;
+}
+
+.date-selector label {
+    font-weight: bold;
+    color: #555;
+}
+
+.date-input {
+    padding: 12px;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.date-input:focus {
+    border-color: #4834d4;
+}
+
+/* Management Grid */
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.manage-slot {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    user-select: none;
+}
+
+/* Active (Working) State */
+.manage-slot.active {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.manage-slot.active:hover {
+    background-color: #c3e6cb;
+    transform: translateY(-2px);
+}
+
+/* Inactive (Off) State */
+.manage-slot.inactive {
+    background-color: #f1f3f5;
+    color: #6c757d;
+    border-color: #dee2e6;
+}
+
+.manage-slot.inactive:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+}
+
+/* Status Icons/Text */
+.status-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .management-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .manage-container {
+        margin: 20px;
+        padding: 20px;
+    }
+}
+.manage-slot.pending {
+    border: 2px dashed #4834d4;
+    transform: scale(0.98);
+}
+
+.btn-confirm {
+    margin-top: 30px;
+    width: 100%;
+    padding: 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-confirm:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.manage-slot {
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+/* State: Online (Green) - Already in Database */
+.manage-slot.online {
+    background-color: #e6fffa;
+    color: #2c7a7b;
+    border-color: #b2f5ea;
+}
+
+/* State: Offline (Grey) - Empty slot */
+.manage-slot.offline {
+    background-color: #f7fafc;
+    color: #a0aec0;
+    border-color: #edf2f7;
+}
+
+/* State: Pending (Yellow/Dashed) - Clicked but not saved */
+.manage-slot.pending {
+    background-color: #fffaf0;
+    color: #c05621;
+    border: 2px dashed #ed8936;
+    animation: pulse 1.5s infinite;
+}
+
+.time-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
