@@ -1390,26 +1390,30 @@ app.get('/api/patient-reservations/:idpatient', (req, res) => {
     const { idpatient } = req.params;
 
     const sql = `
-        SELECT 
+       SELECT 
             a.idBooking, 
             a.status, 
-            a.appointment_time, 
+            v.start_time, 
             u.fullname AS physioName, 
-            p.service AS physioSpecialty,
+            s.title AS serviceName,
+            ps.idService AS physioServiceId,
             u.idUser AS idUser,
             p.image AS physioImage,
             v.available_date
         FROM appointement a
         JOIN users u ON a.idUser = u.idUser
         JOIN availability v ON a.idAvailability = v.idAvailability
+        JOIN physio_services ps ON u.idUser = ps.idUser
+        JOIN services s ON ps.idService = s.idService
         LEFT JOIN profile p ON u.idUser = p.idUser
         WHERE a.idpatient = ?
-        ORDER BY v.available_date DESC, a.appointment_time DESC`;
+        ORDER BY v.available_date DESC, v.start_time DESC`;
 
     db.query(sql, [idpatient], (err, results) => {
         if (err) {
-            console.error("Database Error:", err);
-            return res.status(500).json({ error: "Failed to fetch reservations" });
+            // Check your terminal/console to see the exact SQL error message
+            console.error("Database Error:", err); 
+            return res.status(500).json({ error: "Failed to fetch reservations", details: err.message });
         }
         res.json(results);
     });

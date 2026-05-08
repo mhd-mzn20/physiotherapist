@@ -59,7 +59,7 @@ const Physio = () => {
           {filteredPhysios.map((doc) => (
             <div key={doc.idUser} className="physio-card">
               <div className="card-header">
-                <img src={doc.image || doctor} alt={doc.fullname} className="doc-img" />
+                <img src={doc.image ? `http://localhost:5001/uploads/${doc.image}` : doctor} alt={doc.fullname} className="doc-img" />
                 <div className="doc-details">
                   <h3>{doc.fullname}</h3>
                   <div className="stars">{'★'.repeat(doc.rating || 5)}</div>

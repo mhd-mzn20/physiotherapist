@@ -8,6 +8,15 @@ const PatientReservations = () => {
     const idpatient = sessionStorage.getItem('idpatient');
 
     const navigate = useNavigate();
+
+    const formatServiceNames = (serviceNameValue) => {
+        if (!serviceNameValue) return 'General Physiotherapy';
+        const names = Array.isArray(serviceNameValue)
+            ? serviceNameValue
+            : String(serviceNameValue).split(',').map((name) => name.trim());
+        return names.filter(Boolean).join(', ');
+    };
+
     useEffect(() => {
         const fetchReservations = async () => {
             try {
@@ -42,18 +51,20 @@ const PatientReservations = () => {
 
                             <div className="res-card-body">
                                 <div className="physio-info">
-                                    <img src={res.physioImage || '/default-avatar.png'} alt="Physio" />
+                                    <img
+                                        src={res.physioImage ? `http://localhost:5001/uploads/${res.physioImage}` : '/default-avatar.png'}
+                                        alt={res.physioName ? `Dr. ${res.physioName}` : 'Physio'}
+                                    />
                                     <div>
-        <p className="spec-label">Specialist</p>
-        <p className="physio-name">Dr. {res.physioName}</p>
-        {/* Fallback for specialty */}
-        <p className="physio-sub">{res.physioSpecialty || 'General Physiotherapy'}</p>
-    </div>
+                                        <p className="spec-label">Specialist</p>
+                                        <p className="physio-name">Dr. {res.physioName}</p>
+                                        <p className="physio-sub">{formatServiceNames(res.serviceName)}</p>
+                                    </div>
                                 </div>
 
                                 <div className="res-details">
                                     <p><strong>Date:</strong> {new Date(res.available_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                                    <p><strong>Time:</strong> {res.appointment_time.substring(0, 5)}</p>
+                                    <p><strong>Time:</strong> {res.start_time ? res.start_time.substring(0, 5) : 'N/A'}</p>
                                     <p><strong>Location:</strong> Main Clinic</p>
                                 </div>
 
