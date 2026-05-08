@@ -1066,18 +1066,22 @@ app.get('/api/physio-appointments/:idUser', (req, res) => {
         SELECT 
             a.idBooking, 
             a.status, 
-            a.appointment_time, 
+            v.start_time AS appointment_time, 
+            v.available_date,
             p.name AS patientName, 
-            p.diagnostic, 
+            d.diagnosis_name,           -- From diagnostic table
+            d.description AS diagDesc,   -- From diagnostic table
             i.payment_status, 
-            i.payment_method,
-            v.available_date
+            i.payment_method
         FROM appointement a
         LEFT JOIN patients p ON a.idpatient = p.idpatient
+        LEFT JOIN diagnostic d ON a.idpatient = d.idpatient -- Join diagnostic
         LEFT JOIN invoice i ON a.idBooking = i.idBooking
         LEFT JOIN availability v ON a.idAvailability = v.idAvailability
         WHERE a.idUser = ?
-        ORDER BY a.idBooking DESC`;
+        -- Group by idBooking to avoid duplicates if patient has multiple diagnostics
+        GROUP BY a.idBooking 
+        ORDER BY v.available_date ASC, v.start_time ASC`;
 
     db.query(sql, [idUser], (err, results) => {
         if (err) {
@@ -1328,52 +1332,60 @@ app.post('/api/book-appointment', (req, res) => {
 
 
 app.post('/api/confirm-booking-payment', (req, res) => {
-    // 1. Get the new injury fields from the request body
+    // 1. Destructure updated fields from request body
     const { 
         idpatient, 
         idUser, 
         idAvailability, 
-        diagnostic, 
-        appointment_time, 
+        diagnosisName,        // New field
+        diagnosisDescription, // New field
+        diagnosisDate,        // New field
         payment_method, 
         amount,
         injuryName, 
-        injuryDate  
+        injuryDate,
+        injuryDetails         // Added earlier to the table
     } = req.body;
 
-    // 1. Update Patient Diagnostic (Existing logic)
-    db.query("UPDATE patients SET diagnostic = ? WHERE idpatient = ?", [diagnostic, idpatient], (err) => {
-        if (err) return res.status(500).send(err);
+    // 2. INSERT INTO DIAGNOSTIC TABLE (Replaces the old Patient Update)
+    const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed) VALUES (?, ?, ?, ?)";
+    db.query(diagSql, [idpatient, diagnosisName, diagnosisDescription, diagnosisDate], (errDiag) => {
+        if (errDiag) {
+            console.error("Diagnostic Insert Error:", errDiag);
+            return res.status(500).send(errDiag);
+        }
 
-        // 2. INSERT INTO INJURY TABLE (New logic)
-        const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date) VALUES (?, ?, ?)";
-        db.query(injurySql, [idpatient, injuryName, injuryDate], (errInj) => {
+        // 3. INSERT INTO INJURY TABLE (Including the 'Details' column)
+        const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details) VALUES (?, ?, ?, ?)";
+        db.query(injurySql, [idpatient, injuryName, injuryDate, injuryDetails], (errInj) => {
             if (errInj) {
                 console.error("Injury Insert Error:", errInj);
-                // We continue even if injury fails so the booking isn't blocked, 
-                // or you can return an error here if it's mandatory.
+                // Non-blocking error: we continue so the booking still happens
             }
 
-            // 3. Create Appointment (Existing logic)
+            // 4. Create Appointment (Removed appointment_time as it's now in availability)
             const appSql = `
-                INSERT INTO appointement (idpatient, idUser, idAvailability, appointment_time, status) 
-                VALUES (?, ?, ?, ?, 'pending')`;
+                INSERT INTO appointement (idpatient, idUser, idAvailability, status) 
+                VALUES (?, ?, ?, 'pending')`;
             
-            db.query(appSql, [idpatient, idUser, idAvailability, appointment_time], (err, result) => {
-                if (err) return res.status(500).send(err);
+            db.query(appSql, [idpatient, idUser, idAvailability], (errApp, result) => {
+                if (errApp) {
+                    console.error("Appointment Error:", errApp);
+                    return res.status(500).send(errApp);
+                }
 
                 const idBooking = result.insertId;
                 const payStatus = payment_method === 'online' ? 'paid' : 'pending';
 
-                // 4. Create Invoice (Existing logic)
+                // 5. Create Invoice
                 const invSql = "INSERT INTO invoice (idBooking, amount, payment_method, payment_status) VALUES (?, ?, ?, ?)";
-                db.query(invSql, [idBooking, amount, payment_method, payStatus], (err) => {
-                    if (err) return res.status(500).send(err);
+                db.query(invSql, [idBooking, amount, payment_method, payStatus], (errInv) => {
+                    if (errInv) return res.status(500).send(errInv);
 
-                    // 5. Mark slot as Booked (Existing logic)
+                    // 6. Mark slot as Booked
                     db.query("UPDATE availability SET status = 'booked' WHERE idAvailability = ?", [idAvailability], (errSlot) => {
                         if (errSlot) return res.status(500).send(errSlot);
-                        res.status(200).json({ success: true });
+                        res.status(200).json({ success: true, bookingId: idBooking });
                     });
                 });
             });

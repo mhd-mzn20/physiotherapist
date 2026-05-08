@@ -19,56 +19,62 @@ const Payment = () => {
         );
     }
 
- const handleFinalConfirm = async () => {
-    // Ensure you are getting idpatient correctly
-    const idPatient = localStorage.getItem('idpatient') || sessionStorage.getItem('idpatient');
+    const handleFinalConfirm = async () => {
+        const idPatient = localStorage.getItem('idpatient') || sessionStorage.getItem('idpatient');
 
-    const payload = {
-        idpatient: idPatient,
-        idUser: state.idUser,
-        idAvailability: state.idAvailability,
-        diagnostic: state.diagnostic,
-        appointment_time: state.time,
-        payment_method: method,
-        amount: 120.00,
-        injuryName: state.injuryName, 
-        injuryDate: state.injuryDate
-    };
 
-    try {
-        const res = await fetch('http://localhost:5001/api/confirm-booking-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        
-        if (res.ok) {
-            alert("Booking successful!");
-            navigate('/home');
-        } else {
-            alert("Error in booking process.");
+        const payload = {
+            idpatient: idPatient,
+            idUser: state.idUser,
+            idAvailability: state.idAvailability,
+            idService: state.idService, // Ensure your backend accepts this now
+            amount: state.amount,       // Use the dynamic amount
+            diagnosisName: state.diagnosisName,        // Renamed
+            diagnosisDescription: state.diagnosisDescription, // Renamed
+            diagnosisDate: state.diagnosisDate,        // Renamed
+            payment_method: method,
+            amount: 120.00,
+            injuryName: state.injuryName,
+            injuryDate: state.injuryDate,
+            injuryDetails: state.injuryDetails         // Added
+        };
+
+        try {
+            const res = await fetch('http://localhost:5001/api/confirm-booking-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("Booking successful!");
+                navigate('/home');
+            } else {
+                const errorData = await res.json();
+                alert(`Error: ${errorData.message || "Booking failed"}`);
+            }
+        } catch (err) {
+            console.error("Payment Error:", err);
         }
-    } catch (err) {
-        console.error(err);
-    }
-};
+    };
 
     return (
         <div className="payment-page">
             <div className="payment-container">
-                
-                {/* Left Column: Summary */}
+
+                {/* Inside the summary-info section of Payment.jsx */}
                 <div className="summary-info">
                     <h2>Confirm & Pay</h2>
-                    
+
                     <div className="summary-item">
-                        <strong>Specialist ID</strong>
-                        <p>#{state.idUser}</p>
+                        <strong>Specialist</strong>
+                        {/* Changed from ID to Name */}
+                        <p>Dr. {state.physioName}</p>
                     </div>
 
                     <div className="summary-item">
                         <strong>Appointment Date</strong>
-                        <p>{state.date}</p>
+                        <p>{new Date(state.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</p>
                     </div>
 
                     <div className="summary-item">
@@ -77,27 +83,27 @@ const Payment = () => {
                     </div>
 
                     <div className="summary-item">
-                        <strong>Reason for Visit</strong>
-                        <p>"{state.diagnostic}"</p>
+                        <strong>Service</strong>
+                        <p>{state.serviceName}</p>
                     </div>
 
                     <div className="total-cost-box">
-                        <span>Total Amount:</span>
-                        <h3>$120.00</h3>
+                        <span>Total Amount: ${state.amount}</span>
+
                     </div>
                 </div>
 
                 {/* Right Column: Payment & Confirm */}
                 <div className="payment-section">
                     <h3>Select Payment Method</h3>
-                    
+
                     <div className="payment-options">
                         <label className={`method-card ${method === 'online' ? 'active' : ''}`}>
-                            <input 
-                                type="radio" 
-                                name="payment" 
-                                onChange={() => setMethod('online')} 
-                                checked={method === 'online'} 
+                            <input
+                                type="radio"
+                                name="payment"
+                                onChange={() => setMethod('online')}
+                                checked={method === 'online'}
                             />
                             <div className="method-text">
                                 <strong>Pay Online Now</strong>
@@ -106,11 +112,11 @@ const Payment = () => {
                         </label>
 
                         <label className={`method-card ${method === 'in-clinic' ? 'active' : ''}`}>
-                            <input 
-                                type="radio" 
-                                name="payment" 
-                                onChange={() => setMethod('in-clinic')} 
-                                checked={method === 'in-clinic'} 
+                            <input
+                                type="radio"
+                                name="payment"
+                                onChange={() => setMethod('in-clinic')}
+                                checked={method === 'in-clinic'}
                             />
                             <div className="method-text">
                                 <strong>Pay in Clinic</strong>
@@ -122,7 +128,7 @@ const Payment = () => {
                     <button onClick={handleFinalConfirm} className="pay-btn">
                         Confirm Booking
                     </button>
-                    
+
                     <p className="terms-text">
                         By confirming, you agree to our booking terms and conditions.
                     </p>

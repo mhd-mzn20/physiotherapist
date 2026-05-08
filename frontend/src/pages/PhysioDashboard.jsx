@@ -24,80 +24,79 @@ const PhysioDashboard = () => {
         fetchAppointments();
     }, [physioId]);
 
-    // --- THE STATUS CHANGE FUNCTION ---
     const handleStatusUpdate = async (idBooking, newStatus) => {
         try {
             const response = await fetch('http://localhost:5001/api/update-appointment-status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    idBooking: idBooking, 
-                    status: newStatus 
-                })
+                body: JSON.stringify({ idBooking, status: newStatus })
             });
 
             const result = await response.json();
-
             if (result.success) {
-                // Refresh the list to show the updated status immediately
                 fetchAppointments(); 
             } else {
                 alert("Failed to update status: " + result.error);
             }
         } catch (error) {
             console.error("Request failed:", error);
-            alert("Network error. Please try again.");
         }
     };
 
     if (loading) return <div className="loader">Loading...</div>;
 
     return (
-        <div className="physio-dashboard">
-          
-            <h1>Physiotherapist Appointments</h1>
+        <div className="physio-dashboard-wrapper">
+            <header className="dash-header">
+                <h1>Physiotherapist Dashboard</h1>
+            </header>
+            
             <div className="appointment-grid">
                 {appointments.length === 0 ? (
-                    <p>No appointments found.</p>
+                    <p>No appointments scheduled.</p>
                 ) : (
                     appointments.map((app) => (
                         <div key={app.idBooking} className={`appointment-card ${app.status}`}>
                             <div className="card-header">
-                                <span className={`status-pill ${app.status}`}>{app.status}</span>
+                                <span className={`status-badge ${app.status}`}>{app.status}</span>
                                 <strong>#BK-{app.idBooking}</strong>
                             </div>
 
                             <div className="card-body">
-                                <h3>Patient: {app.patientName}</h3>
-                                <p><strong>Time:</strong> {app.appointment_time}</p>
-                                <p><strong>Issue:</strong> {app.diagnostic}</p>
+                                <p className="date-label">
+                                    {new Date(app.available_date).toLocaleDateString()} at {app.appointment_time.substring(0, 5)}
+                                </p>
+                                <h3>{app.patientName}</h3>
+                                
+                                <div className="diagnostic-summary">
+                                    <strong>Diagnosis:</strong> {app.diagnosis_name}
+                                    <p className="diag-desc">{app.diagDesc}</p>
+                                </div>
+
+                                <div className="payment-tag">
+                                    Status: <span className={app.payment_status}>{app.payment_status}</span> 
+                                    ({app.payment_method})
+                                </div>
                             </div>
 
-                            <div className="card-actions">
+                            <div className="card-footer">
                                 {app.status === 'pending' ? (
-                                    <div className="button-group">
-                                        <button 
-                                            className="accept-btn" 
-                                            onClick={() => handleStatusUpdate(app.idBooking, 'accepted')}
-                                        >
+                                    <div className="action-row">
+                                        <button className="accept-btn" onClick={() => handleStatusUpdate(app.idBooking, 'accepted')}>
                                             Accept
                                         </button>
-                                        <button 
-                                            className="reject-btn" 
-                                            onClick={() => handleStatusUpdate(app.idBooking, 'rejected')}
-                                        >
+                                        <button className="reject-btn" onClick={() => handleStatusUpdate(app.idBooking, 'rejected')}>
                                             Reject
                                         </button>
                                     </div>
                                 ) : (
-                                    <p className="final-status">This request has been <strong>{app.status}</strong></p>
+                                    <p className="final-status">Session {app.status}</p>
                                 )}
                             </div>
                         </div>
                     ))
                 )}
             </div>
-           
         </div>
     );
 };

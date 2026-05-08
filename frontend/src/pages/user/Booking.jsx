@@ -17,16 +17,25 @@ const Booking = () => {
         const offset = today.getTimezoneOffset() * 60000;
         return (new Date(today - offset)).toISOString().split('T')[0];
     };
+const [physioData, setPhysioData] = useState(null);
 
+// Services and Pricing
+const [services, setServices] = useState([]);
+const [selectedService, setSelectedService] = useState(null);
+const [totalPrice, setTotalPrice] = useState(0);
+//slots reservation
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedDate, setSelectedDate] = useState(getLocalToday());
-    const [diagnostic, setDiagnostic] = useState('');
+    const [diagnosisName, setDiagnosisName] = useState('');
+    const [diagnosisDate, setDiagnosisDate] = useState('');
+    const [diagnosisDescription, setDiagnosisDescription] = useState('');
     
     // --- New Injury States ---
     const [injuryName, setInjuryName] = useState('');
     const [injuryDate, setInjuryDate] = useState('');
-    
+    const [injuryDetails, setInjuryDetails] = useState('');
+
     const [loading, setLoading] = useState(false);
 
 const timeLabels = [
@@ -54,21 +63,63 @@ const timeLabels = [
         fetchAvailability();
     }, [physioId]);
 
+    useEffect(() => {
+    const fetchPhysioDetails = async () => {
+        try {
+            
+            const res = await fetch(`http://localhost:5001/api/users/${physioId}`);
+            const data = await res.json();
+            setPhysioData(data);
+        } catch (err) {
+            console.error("Error fetching physio details:", err);
+        }
+    };
+
+    fetchPhysioDetails();
+}, [physioId]);
+
+useEffect(() => {
+    const fetchServices = async () => {
+        try {
+            const res = await fetch(`http://localhost:5001/api/physio-services/${physioId}`);
+            const data = await res.json();
+            setServices(data);
+            // Optional: auto-select the first service
+            if (data.length > 0) {
+                setSelectedService(data[0]);
+                setTotalPrice(data[0].price);
+            }
+        } catch (err) {
+            console.error("Error fetching services:", err);
+        }
+    };
+    fetchServices();
+}, [physioId]);
+
+
     const handleNextStep = () => {
         if (!selectedSlot) return alert("Please select a time slot!");
-        if (!injuryName.trim()) return alert("Please provide an injury name.");
-      
-        navigate('/payment', { 
-            state: { 
-                idpatient: idpatient, 
+        if (!physioData?.fullname) return alert("Loading physiotherapist information, please wait...");
+        if (!selectedSlot) return alert("Please select a time slot!");
+        if (!selectedService) return alert("Please select a service!");
+        navigate('/payment', {
+            state: {
+                idpatient: idpatient,
                 idUser: physioId,
+                physioName: physioData.fullname,
                 idAvailability: selectedSlot.idAvailability,
                 date: selectedDate,
                 time: selectedSlot.start_time,
-                diagnostic: diagnostic,
-                injuryName: injuryName,
-                injuryDate: injuryDate 
-            } 
+                idService: selectedService.idService,
+                serviceName: selectedService.title,
+                amount: totalPrice,
+                diagnosisName,
+                diagnosisDate,
+                diagnosisDescription,
+                injuryName,
+                injuryDate,
+                injuryDetails
+            }
         });
     };
  
@@ -119,38 +170,74 @@ const timeLabels = [
                             })}
                         </div>
                     )}
+                    <div className="service-selection">
+    <h4>Select a Service</h4>
+    <div className="service-list">
+        {services.map((s) => (
+            <label key={s.idService} className={`service-item ${selectedService?.idService === s.idService ? 'active' : ''}`}>
+                <input 
+                    type="radio" // Use radio so they can only pick one
+                    name="service"
+                    checked={selectedService?.idService === s.idService}
+                    onChange={() => {
+                        setSelectedService(s);
+                        setTotalPrice(s.price);
+                    }}
+                />
+                <div className="service-info">
+                    <span className="service-title">{s.title}</span>
+                    <span className="service-price">${s.price}</span>
+                </div>
+            </label>
+        ))}
+    </div>
+</div>
                 </div>
 
+
+                    
                 <aside className="booking-sidebar">
                     <h3>Booking Summary</h3>
                     <div className="summary-card">
                         {/* --- Injury Record Section --- */}
                         <div className="injury-input-group">
-                            <label>What is the injury?</label>
-                            <input 
+    <label>What is the injury?</label>
+    <input type="text" className="sidebar-input" value={injuryName} onChange={(e) => setInjuryName(e.target.value)} />
+    
+    <label>When did it happen?</label>
+    <input type="date" className="sidebar-input" value={injuryDate} onChange={(e) => setInjuryDate(e.target.value)} />
+
+    {/* New Field */}
+    <label>Injury Details (Optional):</label>
+    <textarea className="sidebar-input" value={injuryDetails} onChange={(e) => setInjuryDetails(e.target.value)} rows="2" />
+</div>
+
+                        <div className="diagnostic-input">
+                            <label>Diagnosis Name:</label>
+                            <input
                                 type="text"
                                 className="sidebar-input"
-                                placeholder="e.g. Knee Pain"
-                                value={injuryName}
-                                onChange={(e) => setInjuryName(e.target.value)}
+                                placeholder="e.g. Knee Strain"
+                                value={diagnosisName}
+                                onChange={(e) => setDiagnosisName(e.target.value)}
                             />
-                            
-                            <label>When did it happen?</label>
-                            <input 
+                        </div>
+                        <div className="diagnostic-input">
+                            <label>Date of Diagnosis:</label>
+                            <input
                                 type="date"
                                 className="sidebar-input"
                                 max={getLocalToday()}
-                                value={injuryDate}
-                                onChange={(e) => setInjuryDate(e.target.value)}
+                                value={diagnosisDate}
+                                onChange={(e) => setDiagnosisDate(e.target.value)}
                             />
                         </div>
-
                         <div className="diagnostic-input">
-                            <label>Current Symptoms:</label>
-                            <textarea 
-                                value={diagnostic} 
-                                onChange={(e) => setDiagnostic(e.target.value)} 
-                                placeholder="Describe how you feel..."
+                            <label>Description:</label>
+                            <textarea
+                                value={diagnosisDescription}
+                                onChange={(e) => setDiagnosisDescription(e.target.value)}
+                                placeholder="Describe the diagnosis..."
                                 rows="3"
                             />
                         </div>
@@ -158,7 +245,7 @@ const timeLabels = [
                         <button 
                             className="next-step-btn" 
                             onClick={handleNextStep} 
-                            disabled={!selectedSlot || !diagnostic.trim() }
+                            disabled={!selectedSlot }
                         >
                             Proceed to Payment
                         </button>

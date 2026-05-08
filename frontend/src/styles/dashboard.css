@@ -109,3 +109,28 @@
     cursor: pointer;
     font-weight: 600;
 }
+.date-label {
+    color: #636e72;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.diag-desc {
+    font-size: 0.8rem;
+    color: #636e72;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.payment-tag {
+    margin-top: 15px;
+    font-size: 0.85rem;
+}
+
+/* Ensure the wrapper is the main container */
+.physio-dashboard-wrapper {
+    padding: 40px;
+    background-color: #f4f7f6;
+    min-height: 100vh;
+}
