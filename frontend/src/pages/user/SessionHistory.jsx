@@ -15,12 +15,12 @@ const SessionHistory = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        fetch(`http://localhost:5001/api/session-history/${idBooking}`)
-            .then(res => res.json())
-            .then(data => {
-                setSessions(Array.isArray(data) ? data : []);
-                setLoading(false);
-            })
+        fetch(`http://localhost:5001/api/session-history/${idBooking}?t=${Date.now()}`)
+        .then(res => res.json())
+        .then(data => {
+            setSessions(Array.isArray(data) ? data : []);
+            setLoading(false);
+        })
             .catch(err => {
                 console.error("Fetch error:", err);
                 setSessions([]);
@@ -81,9 +81,11 @@ const SessionHistory = () => {
             </div>
         );
     }
-
+  
     const docInfo = sessions[0];
-
+const getImageUrl = () => {
+        return docInfo?.physioImage ? `http://localhost:5001/uploads/${docInfo.physioImage}` : '/default-avatar.png';
+    };
     return (
         <div className="session-history-container">
             
@@ -92,7 +94,7 @@ const SessionHistory = () => {
                 <div className="doc-header-card">
                     <div className="doc-profile-main">
                         <img 
-                            src={docInfo?.physioImage} 
+                            src={getImageUrl()} 
                             alt="Doctor" 
                             className="doc-img-circle" 
                         />

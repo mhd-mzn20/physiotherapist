@@ -33,7 +33,7 @@ const Payment = () => {
             diagnosisDescription: state.diagnosisDescription, // Renamed
             diagnosisDate: state.diagnosisDate,        // Renamed
             payment_method: method,
-            amount: 120.00,
+            amount: state.amount,
             injuryName: state.injuryName,
             injuryDate: state.injuryDate,
             injuryDetails: state.injuryDetails         // Added

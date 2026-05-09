@@ -4,7 +4,17 @@ import '../styles/profile.css';
 const PhysioProfile = () => {
     const idUser = sessionStorage.getItem('idUser');
     const [isEditing, setIsEditing] = useState(false);
+    const [isAddingExperience, setIsAddingExperience] = useState(false);
+    const [editingExperienceId, setEditingExperienceId] = useState(null);
     const [allServices, setAllServices] = useState([]);
+    const [experiences, setExperiences] = useState([]);
+    const [newExperience, setNewExperience] = useState({
+        title: '',
+        company: '',
+        start_date: '',
+        end_date: '',
+        description: ''
+    });
     const [profile, setProfile] = useState({
         fullname: '',
         services: [],
@@ -19,27 +29,121 @@ const PhysioProfile = () => {
 
     useEffect(() => {
         loadProfileData();
+        loadExperiences();
     }, [idUser]);
+// In PhysioProfile.jsx, update the loadProfileData function:
 const loadProfileData = async () => {
     try {
-        const [profileData, servicesData, physioServicesData] = await Promise.all([
-            fetch(`http://localhost:5001/api/profile/${idUser}`).then(res => res.json()),
-            fetch('http://localhost:5001/api/services').then(res => res.json()),
-            fetch(`http://localhost:5001/api/physio-services/${idUser}`).then(res => res.json())
+        const [profileRes, servicesRes, physioServicesRes] = await Promise.all([
+            fetch(`http://localhost:5001/api/profile/${idUser}`),
+            fetch('http://localhost:5001/api/services'),
+            fetch(`http://localhost:5001/api/physio-services/${idUser}`)
         ]);
 
-        // Only update if data exists
-        if (profileData && Object.keys(profileData).length > 0) {
+        const profileData = await profileRes.json();
+        const servicesData = await servicesRes.json();
+        const physioServicesData = await physioServicesRes.json();
+
+        if (profileData && !profileData.error) {
             setProfile({
-                ...profileData,
-                services: physioServicesData || []
+                fullname: profileData.fullname || '',
+                bio: profileData.bio || '',
+                experience: profileData.experience || 0,
+                telephone: profileData.telephone || '',
+                image: profileData.image || '',
+                rating: profileData.rating || 0,
+                services: Array.isArray(physioServicesData) ? physioServicesData : []
             });
         }
-        setAllServices(servicesData);
+        setAllServices(Array.isArray(servicesData) ? servicesData : []);
     } catch (err) {
         console.error("Error loading data:", err);
     }
 };
+const loadExperiences = async () => {
+    try {
+        const data = await fetch(`http://localhost:5001/api/experiences/${idUser}`).then(res => res.json());
+        setExperiences(data || []);
+    } catch (err) {
+        console.error("Error loading experiences:", err);
+    }
+};
+
+const handleAddExperience = async () => {
+    if (!newExperience.title || !newExperience.company || !newExperience.start_date) {
+        alert("Please fill in Title, Company, and Start Date");
+        return;
+    }
+
+    try {
+        const res = await fetch('http://localhost:5001/api/add-experience', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idUser, ...newExperience })
+        });
+
+        if (!res.ok) throw new Error("Failed to add experience");
+        
+        await loadExperiences();
+        setNewExperience({ title: '', company: '', start_date: '', end_date: '', description: '' });
+        setIsAddingExperience(false);
+        alert("Experience added successfully!");
+    } catch (err) {
+        console.error(err);
+        alert("Failed to add experience");
+    }
+};
+
+const handleUpdateExperience = async (id) => {
+    const expToUpdate = experiences.find(e => e.id === id);
+    
+    if (!expToUpdate.title || !expToUpdate.company || !expToUpdate.start_date) {
+        alert("Please fill in Title, Company, and Start Date");
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:5001/api/update-experience/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(expToUpdate)
+        });
+
+        if (!res.ok) throw new Error("Failed to update experience");
+        
+        await loadExperiences();
+        setEditingExperienceId(null);
+        alert("Experience updated successfully!");
+    } catch (err) {
+        console.error(err);
+        alert("Failed to update experience");
+    }
+};
+
+const handleDeleteExperience = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this experience?")) return;
+
+    try {
+        const res = await fetch(`http://localhost:5001/api/delete-experience/${id}`, { method: 'DELETE' });
+        
+        if (!res.ok) throw new Error("Failed to delete experience");
+        
+        await loadExperiences();
+        alert("Experience deleted successfully!");
+    } catch (err) {
+        console.error(err);
+        alert("Failed to delete experience");
+    }
+};
+
+const updateExperienceField = (id, field, value) => {
+    setExperiences(experiences.map(e => e.id === id ? { ...e, [field]: value } : e));
+};
+
+const updateNewExperienceField = (field, value) => {
+    setNewExperience(prev => ({ ...prev, [field]: value }));
+};
+    
     const getImageUrl = () => {
         if (previewUrl) return previewUrl;
         if (profile.image) return `http://localhost:5001/uploads/${profile.image}`;
@@ -136,7 +240,58 @@ const loadProfileData = async () => {
                     )}
                 </h1>
 
+                <div className="profile-details">
+                    <div className="detail-item">
+                        <strong>Experience:</strong>
+                        {isEditing ? (
+                            <input 
+                                type="number" 
+                                name="experience" 
+                                value={profile.experience} 
+                                onChange={handleInputChange}
+                                min="0"
+                                placeholder="Years of experience"
+                            />
+                        ) : (
+                            <span>{profile.experience} years</span>
+                        )}
+                    </div>
+                    
+                    <div className="detail-item">
+                        <strong>Telephone:</strong>
+                        {isEditing ? (
+                            <input 
+                                type="tel" 
+                                name="telephone" 
+                                value={profile.telephone} 
+                                onChange={handleInputChange}
+                                placeholder="Phone number"
+                            />
+                        ) : (
+                            <span>{profile.telephone}</span>
+                        )}
+                    </div>
+
+                    <div className="detail-item bio-item">
+                        <strong>Bio:</strong>
+                        {isEditing ? (
+                            <textarea
+                                name="bio"
+                                value={profile.bio}
+                                onChange={handleInputChange}
+                                placeholder="Write a short bio about yourself"
+                                rows="4"
+                            />
+                        ) : (
+                            <span>{profile.bio || 'No bio available yet.'}</span>
+                        )}
+                    </div>
+
+                
+                </div>
+
                 <div className="services-selector">
+                    <h3>Services</h3>
                     {isEditing ? (
                         allServices.map(service => {
                             const selected = profile.services.find(s => s.idService === service.idService);
@@ -152,6 +307,112 @@ const loadProfileData = async () => {
                         })
                     ) : (
                         <p>{profile.services.map(s => `${s.title} ($${s.price})`).join(', ')}</p>
+                    )}
+                </div>
+
+                <div className="experience-section">
+                    <div className="experience-header">
+                        <h3>Work Experience</h3>
+                        {isEditing && (
+                            <button className="add-exp-btn" onClick={() => setIsAddingExperience(!isAddingExperience)}>
+                                {isAddingExperience ? "Cancel" : "+ Add Experience"}
+                            </button>
+                        )}
+                    </div>
+
+                    {isAddingExperience && (
+                        <div className="experience-form">
+                            <input 
+                                type="text" 
+                                placeholder="Job Title" 
+                                value={newExperience.title}
+                                onChange={(e) => updateNewExperienceField('title', e.target.value)}
+                            />
+                            <input 
+                                type="text" 
+                                placeholder="Company" 
+                                value={newExperience.company}
+                                onChange={(e) => updateNewExperienceField('company', e.target.value)}
+                            />
+                            <input 
+                                type="date" 
+                                value={newExperience.start_date}
+                                onChange={(e) => updateNewExperienceField('start_date', e.target.value)}
+                            />
+                            <input 
+                                type="date" 
+                                value={newExperience.end_date}
+                                onChange={(e) => updateNewExperienceField('end_date', e.target.value)}
+                            />
+                            <textarea 
+                                placeholder="Description (optional)" 
+                                value={newExperience.description}
+                                onChange={(e) => updateNewExperienceField('description', e.target.value)}
+                                rows="3"
+                            />
+                            <button className="save-exp-btn" onClick={handleAddExperience}>Save Experience</button>
+                        </div>
+                    )}
+
+                    {experiences.length > 0 ? (
+                        <div className="experiences-list">
+                            {experiences.map(exp => (
+                                <div key={exp.id} className="experience-card">
+                                    {editingExperienceId === exp.id ? (
+                                        <div className="experience-form">
+                                            <input 
+                                                type="text" 
+                                                value={exp.title}
+                                                onChange={(e) => updateExperienceField(exp.id, 'title', e.target.value)}
+                                            />
+                                            <input 
+                                                type="text" 
+                                                value={exp.company}
+                                                onChange={(e) => updateExperienceField(exp.id, 'company', e.target.value)}
+                                            />
+                                            <input 
+                                                type="date" 
+                                                value={exp.start_date}
+                                                onChange={(e) => updateExperienceField(exp.id, 'start_date', e.target.value)}
+                                            />
+                                            <input 
+                                                type="date" 
+                                                value={exp.end_date || ''}
+                                                onChange={(e) => updateExperienceField(exp.id, 'end_date', e.target.value)}
+                                            />
+                                            <textarea 
+                                                value={exp.description}
+                                                onChange={(e) => updateExperienceField(exp.id, 'description', e.target.value)}
+                                                rows="3"
+                                            />
+                                            <button className="save-exp-btn" onClick={() => handleUpdateExperience(exp.id)}>Save</button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="exp-title-row">
+                                                <div>
+                                                    <h4>{exp.title}</h4>
+                                                    <p className="exp-company">{exp.company}</p>
+                                                </div>
+                                                {isEditing && (
+                                                    <div className="exp-actions">
+                                                        <button className="edit-btn" onClick={() => setEditingExperienceId(exp.id)}>Edit</button>
+                                                        <button className="delete-btn" onClick={() => handleDeleteExperience(exp.id)}>Delete</button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <p className="exp-date">
+                                                {new Date(exp.start_date).toLocaleDateString()} 
+                                                {exp.end_date ? ` - ${new Date(exp.end_date).toLocaleDateString()}` : ' - Present'}
+                                            </p>
+                                            {exp.description && <p className="exp-description">{exp.description}</p>}
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="no-exp-text">No work experience added yet</p>
                     )}
                 </div>
 

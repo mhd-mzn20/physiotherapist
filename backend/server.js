@@ -1069,8 +1069,8 @@ app.get('/api/physio-appointments/:idUser', (req, res) => {
             v.start_time AS appointment_time, 
             v.available_date,
             p.name AS patientName, 
-            d.diagnosis_name,           -- From diagnostic table
-            d.description AS diagDesc,   -- From diagnostic table
+            d.diagnosis_name,           
+            d.description AS diagDesc,   
             i.payment_status, 
             i.payment_method
         FROM appointement a
@@ -1079,7 +1079,7 @@ app.get('/api/physio-appointments/:idUser', (req, res) => {
         LEFT JOIN invoice i ON a.idBooking = i.idBooking
         LEFT JOIN availability v ON a.idAvailability = v.idAvailability
         WHERE a.idUser = ?
-        -- Group by idBooking to avoid duplicates if patient has multiple diagnostics
+       
         GROUP BY a.idBooking 
         ORDER BY v.available_date ASC, v.start_time ASC`;
 
@@ -1100,7 +1100,7 @@ app.post('/api/update-appointment-status', (req, res) => {
         return res.status(400).json({ error: "Missing data" });
     }
 
-    // 1. Update the appointment status first
+    // 1. Update the appointment status
     const updateAppSql = "UPDATE appointement SET status = ? WHERE idBooking = ?";
     
     db.query(updateAppSql, [status, idBooking], (err, result) => {
@@ -1109,38 +1109,41 @@ app.post('/api/update-appointment-status', (req, res) => {
             return res.status(500).json({ error: err.message });
         }
 
-        // 2. If accepted, sync the specialist to the patient record
-        if (status === 'accepted') {
-            // Get the IDs from the appointment we just updated
-            const findInfoSql = "SELECT idpatient, idUser FROM appointement WHERE idBooking = ?";
-            
-            db.query(findInfoSql, [idBooking], (err, rows) => {
-                if (err || rows.length === 0) return res.json({ success: true });
+        // 2. Handle Rejection: Free up the availability slot
+        if (status === 'rejected') {
+            const releaseSlotSql = `
+                UPDATE availability 
+                SET status = 'available' 
+                WHERE idAvailability = (SELECT idAvailability FROM appointement WHERE idBooking = ?)`;
 
-                const { idpatient, idUser } = rows[0];
-
-                // 3. FIX: Use 'idphysiotherapist' as the column name here
-                const updatePatientSql = "UPDATE patients SET idphysiotherapist = ? WHERE idpatient = ?";
-                
-                db.query(updatePatientSql, [idUser, idpatient], (err) => {
-                    if (err) {
-                        console.error("Could not link patient to physio:", err);
-                        // Still return success for the appointment status even if this link fails
-                    }
-                    res.json({ success: true, message: "Appointment accepted and patient assigned to specialist." });
-                });
+            db.query(releaseSlotSql, [idBooking], (errSlot) => {
+                if (errSlot) {
+                    console.error("Error releasing slot:", errSlot);
+                    return res.status(500).json({ error: "Appointment rejected but slot update failed" });
+                }
+                return res.json({ success: true, message: "Appointment rejected and slot freed." });
             });
-        } else {
-            res.json({ success: true, message: `Appointment ${status}` });
+        } 
+        
+        // 3. Handle Acceptance:  
+        else if (status === 'accepted') {
+            // Logic for accepted status
+            return res.json({ success: true, message: "Appointment accepted." });
+        } 
+        
+        // 4. Fallback for other statuses
+        else {
+            return res.json({ success: true, message: `Status updated to ${status}` });
         }
     });
 });
+
 
 // Get Profile
 app.get('/api/profile/:idUser', (req, res) => {
     const sql = `
         SELECT u.fullname, u.email, u.telephone, 
-               p.bio, p.service, p.experience, p.image, p.rating
+               p.bio,  p.experience, p.image, p.rating
         FROM users u
         LEFT JOIN profile p ON u.idUser = p.idUser
         WHERE u.idUser = ?`;
@@ -1155,45 +1158,102 @@ app.get('/api/profile/:idUser', (req, res) => {
 
 // Update Bio and Image
 app.post('/api/update-profile-details', upload.single('profileImage'), (req, res) => {
-  const { idUser, fullname, experience, bio, telephone } = req.body;
+    const { idUser, fullname, experience, bio, telephone } = req.body;
 
-  // 1️⃣ Get current image first
-  const getImageSql = `SELECT image FROM profile WHERE idUser = ?`;
+    // First: Update the users table (always exists)
+    const userSql = `UPDATE users SET fullname = ?, telephone = ? WHERE idUser = ?`;
+    
+    db.query(userSql, [fullname, telephone, idUser], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
 
-  db.query(getImageSql, [idUser], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+        // Second: Check if profile exists
+        db.query('SELECT image FROM profile WHERE idUser = ?', [idUser], (err, results) => {
+            const currentImage = results.length > 0 ? results[0].image : null;
+            const newImage = req.file ? req.file.filename : currentImage;
 
-    let currentImage = results[0]?.image || null;
+            // Third: Use REPLACE INTO or INSERT ... ON DUPLICATE KEY 
+            // to create the profile if it's missing
+            const profileSql = `
+                INSERT INTO profile (idUser, bio, experience, image) 
+                VALUES (?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE bio = ?, experience = ?, image = ?`;
 
-    // 2️⃣ Decide which image to use
-    const newImage = req.file ? req.file.filename : currentImage;
-
-    // 3️⃣ Update WITHOUT losing image
-    const updateSql = `
-      UPDATE profile 
-      SET bio = ?, experience = ?, image = ?
-      WHERE idUser = ?
-    `;
-
-    db.query(updateSql, [bio, experience, newImage, idUser], (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-
-      // optional: update user table too
-      const userSql = `
-        UPDATE users 
-        SET fullname = ?, telephone = ?
-        WHERE idUser = ?
-      `;
-
-      db.query(userSql, [fullname, telephone, idUser], (err2) => {
-        if (err2) return res.status(500).json({ error: err2.message });
-
-        res.json({ message: "Profile updated successfully" });
-      });
+            db.query(profileSql, [idUser, bio, experience, newImage, bio, experience, newImage], (err) => {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ message: "Profile updated successfully" });
+            });
+        });
     });
-  });
 });
 
+
+// --- 1. GET Experiences for a specific user ---
+app.get('/api/experiences/:idUser', (req, res) => {
+    const { idUser } = req.params;
+    // We select 'idExperience' AS 'id' so the frontend can find 'exp.id'
+    const sql = `SELECT idExperience AS id, title, company, 
+                 DATE_FORMAT(start_date, '%Y-%m-%d') as start_date, 
+                 DATE_FORMAT(end_date, '%Y-%m-%d') as end_date, 
+                 description 
+                 FROM experiences WHERE idUser = ?`;
+    
+    db.query(sql, [idUser], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// --- 2. POST Add new experience ---
+app.post('/api/add-experience', (req, res) => {
+    const { idUser, title, company, start_date, end_date, description } = req.body;
+
+    // Basic validation
+    if (!idUser || !title || !company || !start_date) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const sql = `
+        INSERT INTO experiences (idUser, title, company, start_date, end_date, description) 
+        VALUES (?, ?, ?, ?, ?, ?)`;
+
+    // We handle empty end_date by passing null if it's an empty string
+    const values = [
+        idUser, 
+        title, 
+        company, 
+        start_date, 
+        end_date || null, 
+        description || ""
+    ];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error("Insert Experience Error:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ success: true, message: "Experience added", id: result.insertId });
+    });
+});
+
+app.delete('/api/delete-experience/:id', (req, res) => {
+    const { id } = req.params;
+
+    // Use the actual column name from your SQL file
+    const sql = "DELETE FROM experiences WHERE idExperience = ?";
+
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Delete SQL Error:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Experience not found in database" });
+        }
+
+        res.json({ success: true });
+    });
+});
 /* ====================================================================================================================================
   patient
 ========================= ==============================================*/
@@ -1337,14 +1397,14 @@ app.post('/api/confirm-booking-payment', (req, res) => {
         idpatient, 
         idUser, 
         idAvailability, 
-        diagnosisName,        // New field
-        diagnosisDescription, // New field
-        diagnosisDate,        // New field
+        diagnosisName,        
+        diagnosisDescription, 
+        diagnosisDate,        
         payment_method, 
         amount,
         injuryName, 
         injuryDate,
-        injuryDetails         // Added earlier to the table
+        injuryDetails         
     } = req.body;
 
     // 2. INSERT INTO DIAGNOSTIC TABLE (Replaces the old Patient Update)
@@ -1443,9 +1503,8 @@ app.get('/api/session-history/:idBooking', (req, res) => {
             s.test AS test_assessment, 
             s.protocol AS protocol_exercise, 
             s.remark,
-            u.idUser,           -- <--- ADD THIS LINE HERE
+            u.idUser,           
             u.fullname AS physioName, 
-            p.service AS physioSpecialty, 
             p.image AS physioImage,
             p.rating
         FROM sessions s
@@ -1465,49 +1524,46 @@ app.get('/api/session-history/:idBooking', (req, res) => {
 app.post('/api/rate-physio', (req, res) => {
     const { idUser, idpatient, rating, comment } = req.body;
 
-    console.log("Received Rating Data:", { idUser, idpatient, rating, comment });
-
     if (!idUser || !idpatient || !rating) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // 1. FIRST: Check if the user has already rated this physiotherapist
-    const checkSql = "SELECT * FROM evaluation WHERE idUser = ? AND idpatient = ?";
-    
+    // 1. Check if the patient has already rated this physiotherapist
+    const checkSql = "SELECT id FROM evaluation WHERE idUser = ? AND idpatient = ?";
     db.query(checkSql, [idUser, idpatient], (errCheck, results) => {
-        if (errCheck) return res.status(500).json({ error: errCheck.sqlMessage });
-
+        if (errCheck) return res.status(500).json({ error: errCheck.message });
+        
         if (results.length > 0) {
-            // User has already rated this person
-            return res.status(400).json({ 
-                success: false, 
-                message: "You have already submitted a rating for this specialist." 
-            });
+            return res.status(400).json({ success: false, message: "You have already rated this specialist." });
         }
 
-        // 2. SECOND: Proceed with Insertion if no record was found
+        // 2. Insert the new rating into the evaluation table
         const insertSql = "INSERT INTO evaluation (idUser, idpatient, rating, comment) VALUES (?, ?, ?, ?)";
-        
-        db.query(insertSql, [idUser, idpatient, rating, comment], (err) => {
-            if (err) {
-                console.error("SQL Error during Insert:", err.sqlMessage);
-                return res.status(500).json({ error: err.sqlMessage  });
-            }
+        db.query(insertSql, [idUser, idpatient, rating, comment], (errInsert) => {
+            if (errInsert) return res.status(500).json({ error: "Insert failed: " + errInsert.message });
 
-            // 3. THIRD: Calculate the average
-            const avgSql = "SELECT AVG(rating) as avgRating FROM evaluation WHERE idUser = ?";
-            db.query(avgSql, [idUser], (err2, resultsAvg) => {
-                if (err2) return res.status(500).json({ error: err2.sqlMessage });
+            // 3. Calculate the average and UPDATE THE PROFILE TABLE
+            // We use IFNULL(..., 0) to ensure we don't try to save a NULL value
+            const updateSql = `
+                UPDATE profile 
+                SET rating = (SELECT IFNULL(AVG(rating), 0) FROM evaluation WHERE idUser = ?) 
+                WHERE idUser = ?`;
 
-                const newAverage = resultsAvg[0].avgRating || 0;
+            db.query(updateSql, [idUser, idUser], (errUpdate, result) => {
+                if (errUpdate) {
+                    console.error("Update Error:", errUpdate.message);
+                    return res.status(500).json({ error: "Failed to update profile rating", details: errUpdate.message });
+                }
 
-                // 4. FOURTH: Update the users table
-                const updateUserSql = "UPDATE users SET rating = ? WHERE idUser = ?";
-                db.query(updateUserSql, [newAverage, idUser], (err3) => {
-                    if (err3) return res.status(500).json({ error: err3.sqlMessage });
-                    
-                    res.json({ success: true, newAverage });
-                });
+                // Check if a profile record actually exists for this idUser
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({ 
+                        success: true, 
+                        message: "Rating saved, but no profile was found to update for this user." 
+                    });
+                }
+                
+                res.json({ success: true, message: "Rating submitted and profile updated!" });
             });
         });
     });

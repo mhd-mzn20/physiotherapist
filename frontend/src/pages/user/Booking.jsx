@@ -164,7 +164,7 @@ useEffect(() => {
                                         disabled={!slot}
                                     >
                                         {time.substring(0, 5)}
-                                        <span className="slot-status">{slot ? 'Available' : 'Taken'}</span>
+                                        <span className="slot-status">{slot ? 'Available' : 'Unavailable'}</span>
                                     </button>
                                 );
                             })}

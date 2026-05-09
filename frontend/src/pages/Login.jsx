@@ -47,10 +47,7 @@ const handleLogin = async () => {
   }
 };
 
-  const handleReset = () => {
-    setUsername('');
-    setPassword('');
-  };
+ 
 
   return (
     <>
@@ -77,7 +74,7 @@ const handleLogin = async () => {
 
           <div className="buttons">
             <button className="btn-primary" onClick={handleLogin}>Login</button>
-            <button className="btn-secondary" onClick={handleReset}>Cancel</button>
+            
           </div>
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>

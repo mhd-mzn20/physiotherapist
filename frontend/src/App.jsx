@@ -59,6 +59,7 @@ function App() {
     <BrowserRouter>
       <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/Register" element={<Register />} />
         <Route path="/login" element={<Login />} /> 
        
 <Route element={<PhysioLayout />}>
@@ -109,7 +110,7 @@ function App() {
         <Route path="/view-physio/:id" element={<ViewPhysioProfile />} />
         <Route path="/session-history/:idBooking" element={<SessionHistory />} />
         </Route>
-        <Route path="/Register" element={<Register />} />
+        
         </Route>
       </Routes>
       

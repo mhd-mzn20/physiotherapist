@@ -95,8 +95,8 @@
 .btn-profile {
   flex: 1;
   background-color: white;
-  color: #1e293b;
-  border: 1px solid #cbd5e1;
+  color: white;
+  border: none;
   padding: 10px;
   border-radius: 8px;
   font-weight: 600;

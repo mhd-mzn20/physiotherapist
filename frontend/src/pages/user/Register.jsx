@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/user/register.css';
-
+import Header from '../../components/Header.jsx';
+import Footer from '../../components/Footer.jsx';
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -52,7 +53,7 @@ const Register = () => {
 
   return (
     <div className="login-page">
-    
+    <Header showPortalLink={false} />
       <div className="container page-register">
         <h2>Create Patient Account</h2>
         <form onSubmit={handleRegister}>
@@ -77,9 +78,12 @@ const Register = () => {
 
           <div className="buttons">
             <button type="submit" className="btn-primary signup">Sign Up</button>
+              
           </div>
+          <p style={{textAlign:'center' }}>already have an account? <a href="/login">Login here</a></p>
         </form>
       </div>
+      <Footer />
     </div>
   );
 };
