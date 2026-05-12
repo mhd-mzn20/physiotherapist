@@ -48,18 +48,18 @@ function Biomedical() {
           const patientData = await resPatient.json()
           setPatientName(patientData.name)
 
-          if (patientData.idphysiotherapist) {
-            const resPhysio = await fetch(
-              `http://localhost:5001/api/users/${patientData.idphysiotherapist}`
-            )
-            const physioData = await resPhysio.json()
-            setPhysioName(physioData.fullname || '')
-          }
+         
         } catch (err) {
           console.error(err)
         }
       }
       fetchPatientAndPhysio()
+    }
+    if(idphysiotherapist){
+      fetch(`http://localhost:5001/api/users/${idphysiotherapist}`)
+        .then(res => res.json())
+        .then(data => setPhysioName(data.fullname ))
+        .catch(console.error)
     }
   }, [idengineer, idpatient])
 

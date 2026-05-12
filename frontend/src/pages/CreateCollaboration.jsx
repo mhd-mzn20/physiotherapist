@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+
 
 
 function CreateCollaboration() {
+  const navigate = useNavigate();
   const [engineers, setEngineers] = useState([]);
   const [physiotherapists, setPhysiotherapists] = useState([]);
   const [collaborations, setCollaborations] = useState({}); // { physioId: [engineerNames] }
@@ -128,6 +131,7 @@ function CreateCollaboration() {
       
 
     <div className="container page-therapy">
+      <button onClick={() => navigate('/portal')} className="back-btn2">←Back to Portal</button>   
       <h2>Create Collaboration</h2>
 
       <form onSubmit={handleSubmit}>

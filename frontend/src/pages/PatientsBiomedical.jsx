@@ -122,18 +122,20 @@ function PatientsBiomedical() {
                   <td>{patient.age}</td>
                   <td>{patient.sexe === 1 || patient.sexe === '1' ? 'Male' : 'Female'}</td>
                   <td>
-                    <button
-                      className="action-btn"
-                      onClick={() => goToSessions(patient)}
-                    >
-                      Sessions
-                    </button>
-                   <button
-                      className="action-btn"
-                      onClick={() => goToBiomedicalInfo(patient)}
-                    >
-                      Add/View Biomedical Info
-                    </button>
+                    <div className="action-buttons-group">
+                      <button
+                        className="btn-primary"
+                        onClick={() => goToSessions(patient)} 
+                      >
+                        Sessions
+                      </button>
+                      <button
+                        className="btn-secondary"
+                        onClick={() => goToBiomedicalInfo(patient)}
+                      >
+                        Add/View Biomedical Info
+                      </button>
+                    </div>
 
                   </td>
                 </tr>

@@ -72,7 +72,7 @@ function App() {
         <Route path="/login" element={<Login />} /> 
         <Route path="/portal" element={<Portal />} /> {/* login to admin */}
         <Route path="/add-user" element={<AddUser />} />
-
+<Route path="/create-collaboration" element={<CreateCollaboration />} />
 
 <Route element={<PhysioLayout />}>
     <Route element={<ProtectedUserRoute />}>
@@ -97,7 +97,7 @@ function App() {
         />
         <Route path="/sessions/:iduser/:idpatient" element={<Sessions />} />
         <Route path="/add-patient" element={<AddPatient />} />
-        <Route path="/create-collaboration" element={<CreateCollaboration />} />
+        
         <Route path="/therapy/:iduser/:idpatient/:idsession?" element={<Therapy />} />
         
         <Route path="*" element={<Navigate to="/login" replace />} />
