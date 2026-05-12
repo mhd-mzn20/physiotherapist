@@ -234,6 +234,8 @@
     color: #4834d4;
     font-size: 1.1rem;
 }
+
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
     .time-grid {

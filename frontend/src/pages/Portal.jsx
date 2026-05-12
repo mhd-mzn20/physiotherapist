@@ -142,7 +142,7 @@ function Portal() {
               <th>Full Name</th>
               <th>Role</th>
               <th>Actions</th>
-              <th>Email</th>
+            
             </tr>
           </thead>
 
@@ -175,7 +175,7 @@ function Portal() {
 
                     </div>
                   </td>
-                 <td> {user.email}  </td>
+                
                 </tr>
               ))
             )}

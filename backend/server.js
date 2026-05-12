@@ -357,20 +357,20 @@ app.delete('/api/sessions/:idsession', (req, res) => {
    Adds a new patient linked to a physiotherapist.
 ========================= */
 app.post('/api/patients', (req, res) => {
-  const { name, birthdate, sex, diagnostic, idphysiotherapist } = req.body
+  const { name, birthdate, sex, idphysiotherapist } = req.body
 
-  if (!name || !birthdate || !sex || !diagnostic || !idphysiotherapist) {
+  if (!name || !birthdate || !sex ||  !idphysiotherapist) {
     return res.status(400).json({ message: 'All patient fields are required' })
   }
 
   const sql = `
-    INSERT INTO patients (name, birthdate, sexe, diagnostic, idphysiotherapist)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO patients (name, birthdate, sexe, idphysiotherapist)
+    VALUES (?, ?, ?, ?)
   `
 
   db.query(
     sql,
-    [name, birthdate, sex, diagnostic, idphysiotherapist],
+    [name, birthdate, sex, idphysiotherapist],
     (err, result) => {
       if (err) {
         console.error(err)
@@ -395,21 +395,21 @@ app.post('/api/patients', (req, res) => {
    Updates patient information by id.
 ========================= */
 app.put('/api/patients/:id', (req, res) => {
-  const { name, birthdate, sexe, diagnostic } = req.body
+  const { name, birthdate, sexe } = req.body
 
-  if (!name || !birthdate || !sexe || !diagnostic) {
+  if (!name || !birthdate || !sexe) {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
   const sql = `
     UPDATE patients
-    SET name = ?, birthdate = ?, sexe = ?, diagnostic = ?
+    SET name = ?, birthdate = ?, sexe = ?
     WHERE idpatient = ?
   `
 
   db.query(
     sql,
-    [name, birthdate, sexe, diagnostic, req.params.id],
+    [name, birthdate, sexe, req.params.id],
     (err, result) => {
       if (err) {
         console.error(err)
@@ -506,7 +506,7 @@ app.get('/api/users/role/:role', (req, res) => {
 // GET collaborations for one biomedical engineer
 app.get('/api/collaborations/:idBiomedical', (req, res) => {
   db.query(
-    'SELECT idphysiotherapist FROM collaborations WHERE idbiomedicalengineer = ?',
+    'SELECT id_Physiotherapist FROM collaborations WHERE id_Biomedical_Engineer = ?',
     [req.params.idBiomedical],
     (err, results) => {
       if (err) return res.status(500).json({ message: 'Database error' });
@@ -520,7 +520,7 @@ app.delete('/api/collaborations', (req, res) => {
 
   const sql = `
     DELETE FROM collaborations
-    WHERE idbiomedicalengineer = ? AND idphysiotherapist = ?
+    WHERE id_Biomedical_Engineer = ? AND id_Physiotherapist = ?
   `;
 
   db.query(sql, [idbiomedicalengineer, idphysiotherapist], (err) => {
@@ -533,9 +533,9 @@ app.delete('/api/collaborations', (req, res) => {
 // 1️⃣ Get all collaborations
 app.get("/api/collaborations", (req, res) => {
   const sql = `
-    SELECT c.idphysiotherapist, c.idbiomedicalengineer, u.fullname AS engName
+    SELECT c.id_Physiotherapist AS idphysiotherapist, c.id_Biomedical_Engineer AS idbiomedicalengineer, u.fullname AS engName
     FROM collaborations c
-    JOIN users u ON c.idbiomedicalengineer = u.idUser
+    JOIN users u ON c.id_Biomedical_Engineer = u.idUser
   `;
   db.query(sql, (err, result) => {
     if (err) return res.status(500).json(err);
@@ -547,7 +547,7 @@ app.get("/api/collaborations", (req, res) => {
 app.get("/api/collaborations/engineer/:idBiomedical", (req, res) => {
   const id = req.params.idBiomedical;
   db.query(
-    "SELECT idphysiotherapist FROM collaborations WHERE idbiomedicalengineer = ?",
+    "SELECT id_Physiotherapist FROM collaborations WHERE id_Biomedical_Engineer = ?",
     [id],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -561,7 +561,7 @@ app.post("/api/collaborations", (req, res) => {
   const { idBiomedical, idPhysios } = req.body;
 
   db.query(
-    "DELETE FROM collaborations WHERE idbiomedicalengineer = ?",
+    "DELETE FROM collaborations WHERE id_Biomedical_Engineer = ?",
     [idBiomedical],
     (err) => {
       if (err) return res.status(500).json(err);
@@ -570,7 +570,7 @@ app.post("/api/collaborations", (req, res) => {
 
       const values = idPhysios.map((p) => [idBiomedical, p]);
       db.query(
-        "INSERT INTO collaborations (idbiomedicalengineer, idphysiotherapist) VALUES ?",
+        "INSERT INTO collaborations (id_Biomedical_Engineer, id_Physiotherapist) VALUES ?",
         [values],
         (err2) => {
           if (err2) return res.status(500).json(err2);
@@ -596,7 +596,6 @@ app.get('/api/biomedical-patients/:idBiomedical', (req, res) => {
     p.name,
     p.birthdate,
     p.sexe,
-    p.diagnostic,
     a.idUser AS idphysiotherapist
 FROM patients p
 INNER JOIN appointement a ON p.idpatient = a.idpatient
@@ -1254,6 +1253,65 @@ app.delete('/api/delete-experience/:id', (req, res) => {
         res.json({ success: true });
     });
 });
+
+
+
+// Get all treatment plans for a specific patient
+app.get('/api/treatment-plans/:idpatient', (req, res) => {
+    const sql = "SELECT * FROM treatment_plan WHERE idpatient = ? ORDER BY start_date DESC";
+    db.query(sql, [req.params.idpatient], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// Create a new treatment plan
+app.post('/api/treatment-plans', (req, res) => {
+    const { idpatient, idUser, plan_name, description, start_date, end_date, status } = req.body;
+    const sql = "INSERT INTO treatment_plan (idpatient, idUser, plan_name, description, start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [idpatient, idUser, plan_name, description, start_date, end_date, status], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, idplan: result.insertId });
+    });
+});
+
+// Update an existing treatment plan
+app.put('/api/treatment-plans/:idplan', (req, res) => {
+    const { plan_name, description, start_date, end_date, status } = req.body;
+    const sql = "UPDATE treatment_plan SET plan_name = ?, description = ?, start_date = ?, end_date = ?, status = ? WHERE idplan = ?";
+    db.query(sql, [plan_name, description, start_date, end_date, status, req.params.idplan], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Treatment plan not found' });
+        }
+        res.json({ success: true });
+    });
+});
+
+
+// Fetch medical history (diagnostics and injuries) for a patient
+app.get('/api/patient-medical-history/:idpatient', (req, res) => {
+    const idpatient = req.params.idpatient;
+    
+    const diagnosticSql = "SELECT * FROM diagnostic WHERE idpatient = ? ";
+    const injurySql = "SELECT * FROM injury WHERE idpatient = ? ";
+
+    db.query(diagnosticSql, [idpatient], (err, diagnostics) => {
+        if (err) return res.status(500).json({ error: err.message });
+        
+        db.query(injurySql, [idpatient], (err, injuries) => {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            res.json({ diagnostics, injuries });
+        });
+    });
+});
+
+
+
+
+
+
 /* ====================================================================================================================================
   patient
 ========================= ==============================================*/
@@ -1282,8 +1340,8 @@ app.post('/api/register-patient', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // 3. Insert matching your SQL schema: name, birthdate, sexe, password
-        // Note: 'diagnostic' and 'idphysiotherapist' are left as default/NULL initially
-        const sql = `INSERT INTO patients (name, birthdate, sexe, password, diagnostic) VALUES (?, ?, ?, ?, 'Not assigned')`;
+        // Note:  and 'idphysiotherapist' are left as default/NULL initially
+        const sql = `INSERT INTO patients (name, birthdate, sexe, password) VALUES (?, ?, ?, ?)`;
         
         db.query(sql, [name, birthdate, sexeValue, hashedPassword], (err, result) => {
           if (err) {
@@ -1393,48 +1451,49 @@ app.post('/api/book-appointment', (req, res) => {
 
 app.post('/api/confirm-booking-payment', (req, res) => {
     // 1. Destructure updated fields from request body
-    const { 
-        idpatient, 
-        idUser, 
-        idAvailability, 
-        diagnosisName,        
-        diagnosisDescription, 
-        diagnosisDate,        
-        payment_method, 
+    const {
+        idpatient,
+        idUser,
+        idAvailability,
+        diagnosisName,
+        diagnosisDescription,
+        diagnosisDate,
+        payment_method,
         amount,
-        injuryName, 
+        injuryName,
         injuryDate,
-        injuryDetails         
+        injuryDetails
     } = req.body;
 
-    // 2. INSERT INTO DIAGNOSTIC TABLE (Replaces the old Patient Update)
-    const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed) VALUES (?, ?, ?, ?)";
-    db.query(diagSql, [idpatient, diagnosisName, diagnosisDescription, diagnosisDate], (errDiag) => {
-        if (errDiag) {
-            console.error("Diagnostic Insert Error:", errDiag);
-            return res.status(500).send(errDiag);
+    // 2. Create Appointment FIRST to get idBooking
+    const appSql = `
+        INSERT INTO appointement (idpatient, idUser, idAvailability, status)
+        VALUES (?, ?, ?, 'pending')`;
+
+    db.query(appSql, [idpatient, idUser, idAvailability], (errApp, result) => {
+        if (errApp) {
+            console.error("Appointment Error:", errApp);
+            return res.status(500).send(errApp);
         }
 
-        // 3. INSERT INTO INJURY TABLE (Including the 'Details' column)
-        const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details) VALUES (?, ?, ?, ?)";
-        db.query(injurySql, [idpatient, injuryName, injuryDate, injuryDetails], (errInj) => {
-            if (errInj) {
-                console.error("Injury Insert Error:", errInj);
-                // Non-blocking error: we continue so the booking still happens
+        const idBooking = result.insertId;
+
+        // 3. INSERT INTO DIAGNOSTIC TABLE with idBooking FK
+        const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed, idBooking) VALUES (?, ?, ?, ?, ?)";
+        db.query(diagSql, [idpatient, diagnosisName, diagnosisDescription, diagnosisDate, idBooking], (errDiag) => {
+            if (errDiag) {
+                console.error("Diagnostic Insert Error:", errDiag);
+                return res.status(500).send(errDiag);
             }
 
-            // 4. Create Appointment (Removed appointment_time as it's now in availability)
-            const appSql = `
-                INSERT INTO appointement (idpatient, idUser, idAvailability, status) 
-                VALUES (?, ?, ?, 'pending')`;
-            
-            db.query(appSql, [idpatient, idUser, idAvailability], (errApp, result) => {
-                if (errApp) {
-                    console.error("Appointment Error:", errApp);
-                    return res.status(500).send(errApp);
+            // 4. INSERT INTO INJURY TABLE (Including the 'Details' column)
+            const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details) VALUES (?, ?, ?, ?)";
+            db.query(injurySql, [idpatient, injuryName, injuryDate, injuryDetails], (errInj) => {
+                if (errInj) {
+                    console.error("Injury Insert Error:", errInj);
+                    // Non-blocking error: we continue so the booking still happens
                 }
 
-                const idBooking = result.insertId;
                 const payStatus = payment_method === 'online' ? 'paid' : 'pending';
 
                 // 5. Create Invoice

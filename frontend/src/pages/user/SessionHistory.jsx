@@ -134,6 +134,7 @@ const getImageUrl = () => {
                                 <th>Test / Assessment</th>
                                 <th>Protocol / Exercise</th>
                                 <th>Remark</th>
+                                <th>Trainings</th>
                                 
                             </tr>
                         </thead>
@@ -146,28 +147,14 @@ const getImageUrl = () => {
                                     <td>{s.test_assessment}</td>
                                     <td>{s.protocol_exercise}</td>
                                     <td>{s.remark}</td>
-                                   
+                                    <td><button className="view-trainings-btn">View Trainings</button></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </section>
 
-                <section className="training-section">
-                    <h2>2. Assigned Training & Exercises</h2>
-                    <div className="exercise-grid">
-                        <div className="exercise-card">
-                            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b" alt="Stretch" />
-                            <div className="ex-info">
-                                <h4>Cat-Camel Stretch</h4>
-                                <p>Target Sets: 3 Sets</p>
-                                <p>Target Reps: 12 Reps</p>
-                                <p>Frequency: Medium</p>
-                                <button className="start-btn">Start Exercise / Mark Done</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+             
             </div>
 
             {showModal && (

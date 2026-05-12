@@ -67,6 +67,10 @@ function Sessions() {
     navigate(`/therapy/${iduser}/${idpatient}`)
   }
 
+  const openTreatmentPlan = () => {
+    navigate(`/treatement/${iduser}/${idpatient}`)
+  }
+
   const openVideo = (filename) => {
     navigate(`/video/${filename}`)
   }
@@ -145,8 +149,11 @@ function Sessions() {
         </table>
 
         <div className="buttons">
-          <button className="btn-primary" onClick={addNewSession}>
+          <button className="btn-primary btn1" onClick={addNewSession}>
             Add New Session
+          </button>
+          <button className="btn-primary btn2" onClick={openTreatmentPlan} style={{ marginLeft: '12px' }}>
+            Treatment Plan
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@
     background: linear-gradient(135deg, #e0f0f8 0%, #e0e8f8 40%, #e8f8f0 100%); /* Matches your background */
     min-height: 100vh;
     padding: 60px 20px;
-    display: flex;
+    
     justify-content: center;
     align-items: center;
     font-family: 'Poppins', 'Inter', sans-serif;
@@ -14,12 +14,14 @@
     background: white;
     width: 100%;
     max-width: 900px;
+    margin: auto;
     padding: 50px;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
     display: flex;
     gap: 40px; /* Space between details and payment */
     align-items: flex-start;
+   
 }
 
 /* 2. Left Column: Details Summary */
@@ -128,7 +130,9 @@
     background-color: #3c2bb3;
     transform: translateY(-2px);
 }
-
+.back{
+      background: linear-gradient(135deg, #e0f0f8 0%, #e0e8f8 40%, #e8f8f0 100%); /* Matches your background */ ;
+}
 /* Responsive adjustment for mobile */
 @media (max-width: 800px) {
     .payment-container {

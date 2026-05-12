@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import '../../styles/user/booking.css';
+import { TextAlignCenter } from 'lucide-react';
 
 const Booking = () => {
     const { physioId } = useParams();
@@ -125,13 +126,20 @@ useEffect(() => {
  
     return (
         <div className="booking-page">
-           
-            <div className="booking-layout">
-                <div className="booking-container">
-                    <header className="booking-header">
-                        <h2>Select Appointment Time</h2>
-                        <p>Showing availability for the selected date.</p>
-                    </header>
+      
+        <div className="booking-layout">
+            
+            <div className="booking-container">
+               
+                <header className="booking-header">
+               <div className="back-btn " onClick={() => navigate(-1)} style={{float:'left'}}>
+                &#8592; Back
+            </div>  
+                   
+                    
+                    <h2>Select Appointment Time</h2>
+                    <p>Showing availability for the selected date.</p>
+                </header>
 
                     <div className="date-selection">
                         <label>Choose Date:</label>

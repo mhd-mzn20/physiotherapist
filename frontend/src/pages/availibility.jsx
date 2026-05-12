@@ -102,6 +102,7 @@ const Availability = () => {
                         <input 
                             type="date" 
                             value={selectedDate} 
+                            min={getLocalToday()}
                             onChange={(e) => setSelectedDate(e.target.value)}
                             className="date-input"
                         />

@@ -25,9 +25,11 @@ import Biomedical from './pages/Biomedical.jsx'
 
 import AddUser from './pages/AddUser.jsx'
 import BiomedicalView from './pages/BiomedicalView.jsx'
+//mhd-mzn
 import Availability from './pages/availibility.jsx'
 import PhysioDashboard from './pages/PhysioDashboard.jsx'
 import PhysioProfile from './pages/PhysioProfile.jsx'
+import TreatmentPlan from './pages/Treatement.jsx'
 
 import Home from './pages/user/Home.jsx'
 import Services from './pages/user/Services.jsx'
@@ -92,7 +94,7 @@ function App() {
         <Route path="/availability" element={<Availability />} />
         <Route path="/physio-dashboard" element={<PhysioDashboard />} />
         <Route path="/physioprofile" element={<PhysioProfile />} />
-
+        <Route path="/treatement/:iduser/:idpatient" element={<TreatmentPlan />} />
  </Route>
 </Route>
 

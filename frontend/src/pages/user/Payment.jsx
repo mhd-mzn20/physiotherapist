@@ -59,11 +59,18 @@ const Payment = () => {
     };
 
     return (
+        <>
+       
+      
         <div className="payment-page">
+          
             <div className="payment-container">
-
+                
                 {/* Inside the summary-info section of Payment.jsx */}
                 <div className="summary-info">
+                     <div className="back-btn " onClick={() => navigate(-1)} >
+                &#8592; Back
+            </div> 
                     <h2>Confirm & Pay</h2>
 
                     <div className="summary-item">
@@ -136,6 +143,7 @@ const Payment = () => {
 
             </div>
         </div>
+        </>
     );
 };
 

@@ -122,6 +122,27 @@ button:hover {
   color: var(--primary);
   font-weight: 600;
 }
+.back-btn2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: transparent;
+    border: 2px solid #4834d4;
+    color: #4834d4;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 16px;
+}
+
+.back-btn2:hover {
+    background-color: #4834d4;
+    color: white;
+    transform: translateX(-2px);
+}
 
 .patient-card {
   border: 1px solid var(--border);
