@@ -741,6 +741,15 @@ app.get('/uploads/:filename', (req, res) => {
    BIOMEDICAL ROUTES
 ========================= */
 
+// Fetch all available biomedical tests
+app.get('/api/biomedicaltests', (req, res) => {
+  const sql = 'SELECT * FROM biomedicaltests'
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error' })
+    res.json(results)
+  })
+})
+
 app.post(
   '/api/biomedical',
   upload.fields([
@@ -753,18 +762,18 @@ app.post(
       idphysiotherapist,
       idpatient,
       visitdate,
-      testtype,
+      biomedicaltestID,
       testvalue,
       note
     } = req.body
 
-    if (!idengineer || !idpatient || !visitdate || !testtype) {
+    if (!idengineer || !idpatient || !visitdate || !biomedicaltestID) {
       return res.status(400).json({ message: 'Required fields missing' })
     }
 
     const insertBiomedical = `
       INSERT INTO biomedical
-      (idengineer, idphysiotherapist, idpatient, visitdate, testtype, testvalue, note)
+      (idengineer, idphysiotherapist, idpatient, visitdate, biomedicaltestID, testvalue, note)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `
 
@@ -775,7 +784,7 @@ app.post(
         idphysiotherapist || null,
         idpatient,
         visitdate,
-        testtype,
+        biomedicaltestID,
         testvalue || null,
         note || null
       ],
@@ -828,11 +837,14 @@ app.get('/api/biomedical/:idpatient', (req, res) => {
     SELECT 
       b.*,
       u.fullname AS engineer_name,
+      t.description AS test_description,
+      t.name AS test_name,
       f.idfile,
       f.filename,
       f.filetype
     FROM biomedical b
     LEFT JOIN users u ON b.idengineer = u.idUser
+    LEFT JOIN biomedicaltests t ON b.biomedicaltestID = t.biomedicalTestsID
     LEFT JOIN biomedical_files f ON b.idbiomedical = f.idbiomedical
     WHERE b.idpatient = ?
     ORDER BY b.visitdate DESC
@@ -950,18 +962,18 @@ app.put(
   ]),
   (req, res) => {
     const { id } = req.params
-    const { visitdate, testtype, testvalue, note } = req.body
+    const { visitdate, biomedicaltestID, testvalue, note } = req.body
 
     // 1️⃣ Update main biomedical info
     const updateSql = `
       UPDATE biomedical
-      SET visitdate = ?, testtype = ?, testvalue = ?, note = ?
+      SET visitdate = ?, biomedicaltestID = ?, testvalue = ?, note = ?
       WHERE idbiomedical = ?
     `
 
     db.query(
       updateSql,
-      [visitdate, testtype, testvalue || null, note || null, id],
+      [visitdate, biomedicaltestID, testvalue || null, note || null, id],
       (err, result) => {
         if (err) return res.status(500).json({ message: 'Update error' })
 

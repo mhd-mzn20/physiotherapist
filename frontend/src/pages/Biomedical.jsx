@@ -27,6 +27,15 @@ function Biomedical() {
 
   const [biomedicalRecords, setBiomedicalRecords] = useState([])
   const [editingId, setEditingId] = useState(null)
+  const [biomedicalTestsList, setBiomedicalTestsList] = useState([])
+
+  // Fetch available tests
+  useEffect(() => {
+    fetch('http://localhost:5001/api/biomedicaltests')
+      .then(res => res.json())
+      .then(data => setBiomedicalTestsList(data))
+      .catch(console.error)
+  }, [])
 
   /* =========================
      Fetch names
@@ -104,7 +113,7 @@ function Biomedical() {
     formData.append('idphysiotherapist', idphysiotherapist)
     formData.append('idpatient', idpatient)
     formData.append('visitdate', testDate)
-    formData.append('testtype', testType)
+    formData.append('biomedicaltestID', testType)
     formData.append('testvalue', testValue)
     formData.append('note', notes)
 
@@ -171,7 +180,7 @@ function Biomedical() {
   ========================= */
   const handleEdit = record => {
     setEditingId(record.idbiomedical)
-    setTestType(record.testtype)
+    setTestType(record.biomedicaltestID)
     setTestDate(record.visitdate ? new Date(record.visitdate).toISOString().split('T')[0] : '')
     setTestValue(record.testvalue || '')
     setNotes(record.note || '')
@@ -223,13 +232,11 @@ function Biomedical() {
           <label>Select Test Type</label>
           <select value={testType} onChange={e => setTestType(e.target.value)} required>
             <option value="">-- Select Test --</option>
-            <option value="EMG">EMG</option>
-            <option value="EEG">EEG</option>
-            <option value="ECG">ECG</option>
-            <option value="Blood Pressure">Blood Pressure</option>
-            <option value="SpO2">SpO₂</option>
-            <option value="Temperature">Temperature</option>
-            <option value="Respiratory Rate">Respiratory Rate</option>
+            {biomedicalTestsList.map(t => (
+              <option key={t.biomedicalTestsID} value={t.biomedicalTestsID}>
+                {t.name }
+              </option>
+            ))}
           </select>
 
           <label>Test Date</label>
@@ -237,73 +244,6 @@ function Biomedical() {
 
           <label>Test Value</label>
           <input type="text" value={testValue} onChange={e => setTestValue(e.target.value)} />
-
-          <label>Existing CSV Files</label>
-          {existingCsvFiles.map(f => (
-            <div key={f.idfile}>
-              <a href={`http://localhost:5001/uploads/${f.filename}`} target="_blank">{f.filename}</a>
-              <button
-  type="button"
-  onClick={() => handleRemoveExistingFile(f)}
-  style={{
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginLeft: '5px'
-  }}
-  title="Remove file"
->
-  🗑️
-</button>
-
-            </div>
-          ))}
-          <label>Add New CSV Files</label>
-          <input type="file" accept=".csv" multiple onChange={e => setNewCsvFiles(Array.from(e.target.files))} />
-
-          <label>Existing Graph Images</label>
-          {existingImages.map(f => (
-            <div key={f.idfile}>
-              <img src={`http://localhost:5001/uploads/${f.filename}`} width="50" />
-              <button
-  type="button"
-  onClick={() => handleRemoveExistingFile(f)}
-  style={{
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginLeft: '5px'
-  }}
-  title="Remove file"
->
-  🗑️
-</button>
-
-            </div>
-          ))}
-          <label>Add New Graph Images</label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={e => {
-              const files = Array.from(e.target.files)
-              setNewImages(files)
-              handleImagePreview(files)
-            }}
-          />
-
-          {previewImages.length > 0 && (
-            <div className="image-preview">
-              <p>Image Preview:</p>
-              {previewImages.map((img, i) => (
-                <img key={i} src={img} alt="Preview" width="50" style={{ margin: '5px' }} />
-              ))}
-            </div>
-          )}
-
           <label>Notes</label>
           <textarea value={notes} onChange={e => setNotes(e.target.value)} />
 
@@ -330,7 +270,7 @@ function Biomedical() {
               {biomedicalRecords.map(record => (
                 <tr key={record.idbiomedical}>
                   <td>{record.visitdate ? new Date(record.visitdate).toISOString().split('T')[0] : ''}</td>
-                  <td>{record.testtype}</td>
+                  <td>{record.test_name || record.test_description}</td>
                   <td>{record.testvalue}</td>
                   <td>{record.note}</td>
                   <td>{record.engineer_name}</td>
