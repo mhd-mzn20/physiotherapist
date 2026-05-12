@@ -1675,6 +1675,26 @@ app.post('/api/update-physio-services', (req, res) => {
     });
   });
 });
+
+// Get trainings for a specific patient
+app.get('/api/patient-trainings/:idpatient', (req, res) => {
+    const { idpatient } = req.params;
+
+    const sql = `
+        SELECT t.idtraining, t.title as training_title, t.description, 
+               s.title as session_name, s.date_session, s.start_time,
+               u.fullname as physiotherapist
+        FROM training t
+        JOIN sessions s ON t.idsession = s.idsession
+        JOIN users u ON s.idUser = u.idUser
+        WHERE s.idpatient = ?
+        ORDER BY s.date_session DESC`;
+
+    db.query(sql, [idpatient], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
 /* =========================
    START SERVER
 ========================= */

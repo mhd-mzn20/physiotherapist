@@ -30,6 +30,7 @@ import Availability from './pages/availibility.jsx'
 import PhysioDashboard from './pages/PhysioDashboard.jsx'
 import PhysioProfile from './pages/PhysioProfile.jsx'
 import TreatmentPlan from './pages/Treatement.jsx'
+import PatientTrainings from './pages/user/trainings.jsx'
 
 import Home from './pages/user/Home.jsx'
 import Services from './pages/user/Services.jsx'
@@ -111,6 +112,7 @@ function App() {
         <Route path="/patient-reservations" element={<PatientReservations />} />
         <Route path="/view-physio/:id" element={<ViewPhysioProfile />} />
         <Route path="/session-history/:idBooking" element={<SessionHistory />} />
+        <Route path="/my-trainings" element={<PatientTrainings />} />
         </Route>
         
         </Route>
