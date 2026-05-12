@@ -104,9 +104,7 @@ function Patients() {
     <>
 
       <div className="container wide page-patients">
-        <button className="back-btn2" onClick={() => navigate('/physioprofile')} style={{ marginBottom: '16px', float: 'right' , width: '155px' }}>
-          Customize Your Profile
-        </button>
+        
         <p><strong>Physiotherapist:</strong> {physioName}</p>
         <h2>Patients List</h2>
 
@@ -124,7 +122,7 @@ function Patients() {
               <th>Name</th>
               <th>Sex</th>
               <th>Age</th>
-              <th>Diagnostic</th>
+              
               <th>Action</th>
             </tr>
           </thead>
@@ -140,7 +138,7 @@ function Patients() {
                 <td>{p.name}</td>
                 <td>{p.sexe === 1 ? 'Male' : 'Female'}</td>
                 <td>{calculateAge(p.birthdate)}</td>
-                <td>{p.diagnostic}</td>
+                
                 <td>
                   <span
                     className="action-btn"

@@ -82,7 +82,7 @@ function Portal() {
 
   const handleEditCancel = () => setEditingUser(null);
 
-  // ✅ Logout
+  
   const handleLogout = () => {
     sessionStorage.clear();
     navigate('/login');

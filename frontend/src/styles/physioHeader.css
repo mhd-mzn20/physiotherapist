@@ -1,0 +1,180 @@
+/* =========================
+   PHYSIO HEADER STYLES
+   Using purple/indigo app palette
+========================= */
+
+.physio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-bottom: 2px solid #eef2ff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* Brand Section */
+.ph-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.ph-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    color: white;
+    font-weight: 800;
+    font-size: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+.ph-titles h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+}
+
+.ph-titles p {
+    margin: 2px 0 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Navigation Links */
+.ph-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ph-nav-link {
+    text-decoration: none;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ph-nav-link:hover {
+    background-color: #f8fafc;
+    color: #4f46e5;
+}
+
+.ph-nav-link.active {
+    background-color: #eef2ff;
+    color: #4f46e5;
+}
+
+/* Actions */
+.ph-actions {
+    display: flex;
+    align-items: center;
+}
+
+.ph-logout-btn {
+    background-color: #fff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ph-logout-btn:hover {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.ph-logout-btn-mobile {
+    display: none;
+}
+
+/* Mobile Toggle */
+.ph-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+/* Responsive Styles */
+@media (max-width: 900px) {
+    .physio-header {
+        padding: 16px 20px;
+    }
+
+    .ph-nav-link {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .ph-mobile-toggle {
+        display: block;
+    }
+
+    .ph-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #ffffff;
+        flex-direction: column;
+        padding: 16px 20px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .ph-nav.open {
+        display: flex;
+    }
+
+    .ph-nav-link {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 8px;
+    }
+
+    .ph-actions {
+        display: none; 
+    }
+    
+    .ph-logout-btn-mobile {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 14px 16px;
+        margin-top: 10px;
+        border-top: 1px solid #e2e8f0;
+        cursor: pointer;
+    }
+}

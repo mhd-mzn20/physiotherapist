@@ -85,8 +85,11 @@ function AddUser() {
   return (
     <>
      
-      <div className="page-center page-add-user">
-        <div className="form-container">
+      <div className="page-center page-add-user"> 
+        <div className="form-container">  
+       <button className="back-btn2" onClick={() => navigate('/portal')} style={{ marginBottom: '16px' , width: '160px' }}>
+           ←Back to Portal
+        </button >   
           <h2>Add User</h2>
 
           <form onSubmit={handleSubmit}>

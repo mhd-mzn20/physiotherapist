@@ -70,7 +70,7 @@ const PatientReservations = () => {
 
                                 <div className="res-badge-row">
                                     <span className={`status-badge-inline ${res.status}`}>{res.status}</span>
-                                    {res.status === 'pending' && <button className="cancel-btn">Cancel</button>}
+                                    
                                 </div>
 
                                 {res.status === 'accepted' &&

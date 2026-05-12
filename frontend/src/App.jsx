@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import UserNavbar from './components/userNavbar.jsx'
 import Header from './components/Header.jsx'
+import PhysioHeader from './components/PhysioHeader.jsx'
 import Footer from './components/Footer.jsx'
 import UserFooter from './components/userFooter.jsx'
 import { ProtectedUserRoute, ProtectedPatientRoute } from './components/ProtectedRoute';
@@ -57,7 +58,7 @@ const PatientLayout = () => (
 
 const PhysioLayout = () => (
   <>
-    <Header/>
+    <PhysioHeader/>
     <Outlet />
     <Footer />
   </>
@@ -69,10 +70,13 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/Register" element={<Register />} />
         <Route path="/login" element={<Login />} /> 
-       
+        <Route path="/portal" element={<Portal />} /> {/* login to admin */}
+        <Route path="/add-user" element={<AddUser />} />
+
+
 <Route element={<PhysioLayout />}>
     <Route element={<ProtectedUserRoute />}>
-        <Route path="/portal" element={<Portal />} /> {/* login to admin */}
+       
         <Route path="/video/:filename" element={<VideoPlayer />} />
         <Route path="/patients/:idUser" element={<Patients />} />
         <Route path="/patients-biomedical/:idUser" element={<PatientsBiomedical />} />
@@ -95,7 +99,7 @@ function App() {
         <Route path="/add-patient" element={<AddPatient />} />
         <Route path="/create-collaboration" element={<CreateCollaboration />} />
         <Route path="/therapy/:iduser/:idpatient/:idsession?" element={<Therapy />} />
-        <Route path="/add-user" element={<AddUser />} />
+        
         <Route path="*" element={<Navigate to="/login" replace />} />
         <Route path="/availability" element={<Availability />} />
         <Route path="/physio-dashboard" element={<PhysioDashboard />} />
