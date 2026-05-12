@@ -213,7 +213,7 @@ useEffect(() => {
     <input type="text" className="sidebar-input" value={injuryName} onChange={(e) => setInjuryName(e.target.value)} />
     
     <label>When did it happen?</label>
-    <input type="date" className="sidebar-input" value={injuryDate} onChange={(e) => setInjuryDate(e.target.value)} />
+    <input type="date" className="sidebar-input" value={injuryDate} max={getLocalToday()} onChange={(e) => setInjuryDate(e.target.value)} />
 
     {/* New Field */}
     <label>Injury Details (Optional):</label>

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/treatmentPlan.css';
 
 const TreatmentPlan = () => {
     const { idpatient } = useParams();
+    const navigate = useNavigate();
     const idUser = sessionStorage.getItem('idUser');
-    
+
     const [plans, setPlans] = useState([]);
-    const [medicalHistory, setMedicalHistory] = useState({ 
-    diagnostics: [], 
-    injuries: [] 
-});
+    const [medicalHistory, setMedicalHistory] = useState({
+        diagnostics: [],
+        injuries: []
+    });
     const [editingPlan, setEditingPlan] = useState(null);
     const [formData, setFormData] = useState({
         plan_name: '', description: '', start_date: '', end_date: '', status: 'started'
@@ -56,7 +57,7 @@ const TreatmentPlan = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const planId = normalizePlanId(editingPlan);
-        const url = editingPlan 
+        const url = editingPlan
             ? `http://localhost:5001/api/treatment-plans/${planId}`
             : `http://localhost:5001/api/treatment-plans`;
 
@@ -94,27 +95,30 @@ const TreatmentPlan = () => {
 
     return (
         <div className="treatment-container">
-            {/* NEW: Medical History Section */}
+            <button className="back-btn2" onClick={() => navigate(-1)}>
+                ← Back to Sessions
+            </button>
+            {/* Medical History Section */}
             <div className="medical-history-section">
                 <div className="history-card">
                     <h3>Last Diagnostics</h3>
-                   {/* Use ?.length and check for existence */}
-{medicalHistory?.diagnostics?.length > 0 ? (
-    medicalHistory?.diagnostics?.map(d => (
-        <div key={d.idDiagnostic} className="history-item">
-           <p> <strong>{d.diagnosis_name}</strong>: {d.description}</p>
-            
-            <p>Date: {new Date(d.date_diagnosed).toLocaleDateString()}</p>
-        </div>
-    ))
-) : <p>No diagnostics found.</p>}
+                    {/* Use ?.length and check for existence */}
+                    {medicalHistory?.diagnostics?.length > 0 ? (
+                        medicalHistory?.diagnostics?.map(d => (
+                            <div key={d.idDiagnostic} className="history-item">
+                                <p> <strong>{d.diagnosis_name}</strong>: {d.description}</p>
+
+                                <p>Date: {new Date(d.date_diagnosed).toLocaleDateString()}</p>
+                            </div>
+                        ))
+                    ) : <p>No diagnostics found.</p>}
                 </div>
                 <div className="history-card">
                     <h3>Injury History</h3>
                     {medicalHistory?.injuries?.length > 0 ? (
                         medicalHistory.injuries.map(i => (
                             <div key={i.idinjury} className="history-item">
-                                <p> <strong>{i.injury_name}</strong>: {i.Details}</p> 
+                                <p> <strong>{i.injury_name}</strong>: {i.Details}</p>
                                 <p>Date: {new Date(i.injury_date).toLocaleDateString()}</  p>
                             </div>
                         ))

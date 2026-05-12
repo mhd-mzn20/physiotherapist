@@ -7,6 +7,7 @@ const SessionHistory = () => {
     const { idBooking } = useParams();
     const navigate = useNavigate();
     const [sessions, setSessions] = useState([]);
+    const [visits, setVisits] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [showModal, setShowModal] = useState(false);
@@ -27,6 +28,21 @@ const SessionHistory = () => {
                 setLoading(false);
             });
     }, [idBooking]);
+
+    useEffect(() => {
+        const idPatientFromStorage = sessionStorage.getItem('idpatient');
+        if (sessions.length > 0) {
+            const physioId = sessions[0]?.idUser;
+            if (physioId && idPatientFromStorage) {
+                fetch(`http://localhost:5001/api/visits/${physioId}/${idPatientFromStorage}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        setVisits(Array.isArray(data) ? data : []);
+                    })
+                    .catch(err => console.error("Error fetching visits:", err));
+            }
+        }
+    }, [sessions]);
 
    const handleRateSubmit = async () => {
     const docInfo = sessions[0];
@@ -147,11 +163,45 @@ const getImageUrl = () => {
                                     <td>{s.test_assessment}</td>
                                     <td>{s.protocol_exercise}</td>
                                     <td>{s.remark}</td>
-                                    <td><button className="view-trainings-btn">View Trainings</button></td>
+                                    <td><button className="view-trainings-btn" onClick={() => navigate(`/my-trainings/${s.idsession}`)}>View Trainings</button></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                </section>
+
+                <section className="history-section scheduled-visits-section">
+                    <div className="section-header">
+                        <h2>2. Scheduled Visits</h2>
+                    </div>
+                    {visits.length === 0 ? (
+                        <p className="empty-visits-msg">No upcoming visits scheduled.</p>
+                    ) : (
+                        <div className="visits-list-container">
+                            {visits.map(v => {
+                                const visitDate = new Date(v.visit_date);
+                                const isUpcoming = visitDate >= new Date(new Date().setHours(0,0,0,0));
+                                return (
+                                    <div key={v.id_visit} className={`visit-card-item ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                        <div className="visit-card-header">
+                                            <h4 className="visit-card-date">
+                                                {visitDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                            </h4>
+                                            <span className={`visit-status-badge ${isUpcoming ? 'upcoming' : 'past'}`}>
+                                                {isUpcoming ? 'Upcoming' : 'Past'}
+                                            </span>
+                                        </div>
+                                        {v.notes && (
+                                            <div className="visit-notes-box">
+                                                <strong>Note from Dr. {docInfo?.physioName}:</strong><br/>
+                                                {v.notes}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </section>
 
              

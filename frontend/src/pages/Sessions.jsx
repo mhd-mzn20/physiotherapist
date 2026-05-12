@@ -71,6 +71,10 @@ function Sessions() {
     navigate(`/treatement/${iduser}/${idpatient}`)
   }
 
+  const openVisits = () => {
+    navigate(`/visits/${iduser}/${idpatient}`)
+  }
+
   const openVideo = (filename) => {
     navigate(`/video/${filename}`)
   }
@@ -79,6 +83,7 @@ function Sessions() {
     <>
       
       <div className="container extra-wide page-sessions-biomedical">
+        <button className='back-btn2' onClick={() => navigate(-1)} style={{ marginLeft: '12px' }}> ← Back to Patients</button>
         <h2>Therapy Sessions</h2>
 
         <p><strong>Physiotherapist:</strong> {physioName}</p>
@@ -93,6 +98,7 @@ function Sessions() {
               <th>Protocol</th>
               <th>Remark</th>
               <th>Videos</th>
+              <th>trainings</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -121,8 +127,10 @@ function Sessions() {
     <em>No videos</em>
   )}
 </td>
+<td> <button className="action-btn action-btn--training" onClick={() => navigate(`/trainings/${session.idsession}`)}>🏋️ Assign</button> </td>
 
                   <td>
+                    
                     <button
   className="action-btn action-btn--edit"
   onClick={() => editSession(session.idsession)}
@@ -154,6 +162,9 @@ function Sessions() {
           </button>
           <button className="btn-primary btn2" onClick={openTreatmentPlan} style={{ marginLeft: '12px' }}>
             Treatment Plan
+          </button>
+          <button className="btn-primary btn2" onClick={openVisits} style={{ marginLeft: '12px' }}>
+            Visits
           </button>
         </div>
       </div>

@@ -30,7 +30,8 @@ import Availability from './pages/availibility.jsx'
 import PhysioDashboard from './pages/PhysioDashboard.jsx'
 import PhysioProfile from './pages/PhysioProfile.jsx'
 import TreatmentPlan from './pages/Treatement.jsx'
-import PatientTrainings from './pages/user/trainings.jsx'
+import Trainings  from './pages/trainings.jsx'
+import Visits from './pages/Visits.jsx'
 
 import Home from './pages/user/Home.jsx'
 import Services from './pages/user/Services.jsx'
@@ -42,6 +43,10 @@ import Payment from './pages/user/Payment.jsx'
 import PatientReservations from './pages/user/PatientReservations.jsx'
 import ViewPhysioProfile from './pages/user/ViewPhysioProfile.jsx'
 import SessionHistory from './pages/user/SessionHistory.jsx'
+import PatientTrainings from './pages/user/trainingspatient.jsx'
+
+
+
 const PatientLayout = () => (
   <>
     <UserNavbar />
@@ -96,6 +101,8 @@ function App() {
         <Route path="/physio-dashboard" element={<PhysioDashboard />} />
         <Route path="/physioprofile" element={<PhysioProfile />} />
         <Route path="/treatement/:iduser/:idpatient" element={<TreatmentPlan />} />
+        <Route path="/trainings/:idsession" element={<Trainings />} />
+        <Route path="/visits/:iduser/:idpatient" element={<Visits />} />
  </Route>
 </Route>
 
@@ -112,7 +119,7 @@ function App() {
         <Route path="/patient-reservations" element={<PatientReservations />} />
         <Route path="/view-physio/:id" element={<ViewPhysioProfile />} />
         <Route path="/session-history/:idBooking" element={<SessionHistory />} />
-        <Route path="/my-trainings" element={<PatientTrainings />} />
+        <Route path="/my-trainings/:idsession" element={<PatientTrainings />} />
         </Route>
         
         </Route>

@@ -1427,16 +1427,18 @@ app.post('/api/book-appointment', (req, res) => {
     db.query(sqlAppoint, [idpatient, idUser, idAvailability, appointment_time], (err, result) => {
         if (err) return res.status(500).json({ error: "Booking failed" });
 
-        // 2. Insert the Injury Record
-        const sqlInjury = `INSERT INTO injury (idpatient, injury_name, injury_date) VALUES (?, ?, ?)`;
+        const idBooking = result.insertId;
+
+        // 2. Insert the Injury Record (with idBooking FK)
+        const sqlInjury = `INSERT INTO injury (idpatient, injury_name, injury_date, idBooking) VALUES (?, ?, ?, ?)`;
         
-        db.query(sqlInjury, [idpatient, injuryName, injuryDate], (err2) => {
+        db.query(sqlInjury, [idpatient, injuryName, injuryDate, idBooking], (err2) => {
             if (err2) console.error("Injury insert failed:", err2);
 
             // 3. Mark the slot as booked
             const sqlUpdate = "UPDATE availability SET status = 'booked' WHERE idAvailability = ?";
             db.query(sqlUpdate, [idAvailability], (err3) => {
-                res.json({ success: true });
+                res.json({ success: true, bookingId: idBooking });
             });
         });
     });
@@ -1486,9 +1488,9 @@ app.post('/api/confirm-booking-payment', (req, res) => {
                 return res.status(500).send(errDiag);
             }
 
-            // 4. INSERT INTO INJURY TABLE (Including the 'Details' column)
-            const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details) VALUES (?, ?, ?, ?)";
-            db.query(injurySql, [idpatient, injuryName, injuryDate, injuryDetails], (errInj) => {
+            // 4. INSERT INTO INJURY TABLE (Including the 'Details' column and idBooking FK)
+            const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details, idBooking) VALUES (?, ?, ?, ?, ?)";
+            db.query(injurySql, [idpatient, injuryName, injuryDate, injuryDetails, idBooking], (errInj) => {
                 if (errInj) {
                     console.error("Injury Insert Error:", errInj);
                     // Non-blocking error: we continue so the booking still happens
@@ -1680,21 +1682,149 @@ app.post('/api/update-physio-services', (req, res) => {
 app.get('/api/patient-trainings/:idpatient', (req, res) => {
     const { idpatient } = req.params;
 
+    // Matches your actual table schema perfectly
     const sql = `
-        SELECT t.idtraining, t.title as training_title, t.description, 
-               s.title as session_name, s.date_session, s.start_time,
-               u.fullname as physiotherapist
+        SELECT 
+            t.train_id, 
+            t.name AS training_name, 
+            t.sets, 
+            t.reps, 
+            t.frequency, 
+            t.image, 
+            t.assigned_date,
+            s.sessiondate, 
+            s.protocol,
+            u.fullname AS physiotherapist
         FROM training t
         JOIN sessions s ON t.idsession = s.idsession
-        JOIN users u ON s.idUser = u.idUser
+        JOIN users u ON s.idphysiotherapist = u.idUser
         WHERE s.idpatient = ?
-        ORDER BY s.date_session DESC`;
+        ORDER BY t.assigned_date DESC, s.sessiondate DESC`;
 
     db.query(sql, [idpatient], (err, results) => {
+        if (err) {
+            console.error("Error fetching trainings:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(results);
+    });
+});
+/* =========================
+   TRAINING ROUTES (per session)
+========================= */
+
+// GET all trainings for a specific session
+app.get('/api/trainings/:idsession', (req, res) => {
+    const sql = `SELECT * FROM training WHERE idsession = ? ORDER BY assigned_date DESC`;
+    db.query(sql, [req.params.idsession], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
 });
+
+// POST create a new training (with optional image upload)
+app.post('/api/trainings', uploadImage.single('image'), (req, res) => {
+    const { idsession, name, sets, reps, frequency, assigned_date } = req.body;
+
+    if (!idsession || !name || !sets || !reps || !assigned_date) {
+        return res.status(400).json({ message: 'Required fields: idsession, name, sets, reps, assigned_date' });
+    }
+
+    const imageName = req.file ? req.file.filename : null;
+
+    const sql = `INSERT INTO training (idsession, name, sets, reps, frequency, image, assigned_date)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    db.query(sql, [idsession, name, sets, reps, frequency || null, imageName, assigned_date], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ success: true, train_id: result.insertId });
+    });
+});
+
+// PUT update a training (with optional image upload)
+app.put('/api/trainings/:train_id', uploadImage.single('image'), (req, res) => {
+    const { name, sets, reps, frequency, assigned_date } = req.body;
+    const newImage = req.file ? req.file.filename : null;
+
+    // If a new image was uploaded, use it; otherwise keep the existing one
+    if (newImage) {
+        const sql = `UPDATE training SET name = ?, sets = ?, reps = ?, frequency = ?, image = ?, assigned_date = ?
+                     WHERE train_id = ?`;
+        db.query(sql, [name, sets, reps, frequency || null, newImage, assigned_date, req.params.train_id], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            if (result.affectedRows === 0) return res.status(404).json({ message: 'Training not found' });
+            res.json({ success: true, message: 'Training updated' });
+        });
+    } else {
+        // No new image — don't overwrite existing image column
+        const sql = `UPDATE training SET name = ?, sets = ?, reps = ?, frequency = ?, assigned_date = ?
+                     WHERE train_id = ?`;
+        db.query(sql, [name, sets, reps, frequency || null, assigned_date, req.params.train_id], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            if (result.affectedRows === 0) return res.status(404).json({ message: 'Training not found' });
+            res.json({ success: true, message: 'Training updated' });
+        });
+    }
+});
+
+// DELETE a training
+app.delete('/api/trainings/:train_id', (req, res) => {
+    db.query('DELETE FROM training WHERE train_id = ?', [req.params.train_id], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) return res.status(404).json({ message: 'Training not found' });
+        res.json({ success: true, message: 'Training deleted' });
+    });
+});
+
+/* =========================
+   VISIT ROUTES
+========================= */
+
+// GET visits for a specific patient by a specific physiotherapist
+app.get('/api/visits/:idUser/:idpatient', (req, res) => {
+    const sql = `SELECT * FROM visit WHERE idUser = ? AND idpatient = ? ORDER BY visit_date DESC`;
+    db.query(sql, [req.params.idUser, req.params.idpatient], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(results);
+    });
+});
+
+// POST create a new visit
+app.post('/api/visits', (req, res) => {
+    const { idpatient, idUser, visit_date, notes } = req.body;
+
+    if (!idpatient || !idUser || !visit_date) {
+        return res.status(400).json({ message: 'Required fields: idpatient, idUser, visit_date' });
+    }
+
+    const sql = `INSERT INTO visit (idpatient, idUser, visit_date, notes) VALUES (?, ?, ?, ?)`;
+    db.query(sql, [idpatient, idUser, visit_date, notes || null], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ success: true, id_visit: result.insertId });
+    });
+});
+
+// PUT update a visit
+app.put('/api/visits/:id_visit', (req, res) => {
+    const { visit_date, notes } = req.body;
+
+    const sql = `UPDATE visit SET visit_date = ?, notes = ? WHERE id_visit = ?`;
+    db.query(sql, [visit_date, notes || null, req.params.id_visit], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) return res.status(404).json({ message: 'Visit not found' });
+        res.json({ success: true, message: 'Visit updated' });
+    });
+});
+
+// DELETE a visit
+app.delete('/api/visits/:id_visit', (req, res) => {
+    db.query('DELETE FROM visit WHERE id_visit = ?', [req.params.id_visit], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) return res.status(404).json({ message: 'Visit not found' });
+        res.json({ success: true, message: 'Visit deleted' });
+    });
+});
+
 /* =========================
    START SERVER
 ========================= */

@@ -49,7 +49,7 @@ const Physio = () => {
 
   return (
     <div className="find-physio-page">
-      
+        
       <main className="container">
         <h2 className="section-title">Our Expert Physiotherapists</h2>
         <input type="text" placeholder="filter by service..."  className='search'

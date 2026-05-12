@@ -87,6 +87,29 @@
     color: #1d4ed8;
   }
 
+  .page-sessions-biomedical .action-btn--training {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    background: linear-gradient(120deg, #4f46e5, #4338ca);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .page-sessions-biomedical .action-btn--training:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+    background: linear-gradient(120deg, #4338ca, #3730a3);
+  }
+
   .page-sessions-biomedical .buttons {
     margin-top: 20px;
   }

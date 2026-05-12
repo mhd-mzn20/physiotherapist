@@ -290,6 +290,79 @@
     font-weight: 600;
     width: 60%;
 }
+
+/* --- Scheduled Visits --- */
+.scheduled-visits-section {
+    margin-top: 40px;
+}
+
+.empty-visits-msg {
+    padding: 20px;
+    color: #666;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.visits-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.visit-card-item {
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.visit-card-item.upcoming {
+    border-left: 4px solid #4f46e5;
+}
+
+.visit-card-item.past {
+    border-left: 4px solid #e2e8f0;
+}
+
+.visit-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.visit-card-date {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #1e293b;
+}
+
+.visit-status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.visit-status-badge.upcoming {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.visit-status-badge.past {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.visit-notes-box {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #475569;
+    border-left: 2px solid #cbd5e1;
+}
 /* --- Responsive Layout --- */
 @media (max-width: 768px) {
     .doc-header-card {
