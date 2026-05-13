@@ -89,15 +89,25 @@ function PatientsBiomedical() {
   );
 };
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate('/login');
+  };
+
 
   return (
     <>
       
       <div className="container page-patients-biomedical">
-        <h1>
-          <u>Biomedical Engineer :</u> <br />
-          {bioName}
-        </h1>
+        <div className="header-container">
+          <h1>
+            <u className='center'>Biomedical Engineer :</u> <br />
+            {bioName}
+          </h1>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
+        </div>
         <h2>Patients List</h2>
         <table>
           <thead>

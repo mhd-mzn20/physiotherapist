@@ -62,12 +62,12 @@ function SessionsBiomedical() {
         setPatientName(patientData.name);
 
         // Fetch physiotherapist info
-        if (patientData.idphysiotherapist) {
+        if (idPhysiotherapist) {
           const resPhysio = await fetch(
-            `http://localhost:5001/api/users/${patientData.idphysiotherapist}`
+            `http://localhost:5001/api/users/${idPhysiotherapist}`
           );
           const physioData = await resPhysio.json();
-          setPhysioName(physioData.fullname || '');
+          setPhysioName(physioData.fullname || 'physio');
         }
       } catch (err) {
         console.error(err);
@@ -138,6 +138,7 @@ function SessionsBiomedical() {
     <>
      
       <div className="container extra-wide page-sessions-biomedical">
+        <button onClick={() => navigate(-1)} className="back-btn">← Back to Patients</button>
         <h2>Therapy Sessions</h2>
 
         <p><strong>Biomedical Engineer:</strong> {biomedicalName}</p>

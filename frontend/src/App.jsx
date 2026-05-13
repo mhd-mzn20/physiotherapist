@@ -31,7 +31,7 @@ import Availability from './pages/availibility.jsx'
 import PhysioDashboard from './pages/PhysioDashboard.jsx'
 import PhysioProfile from './pages/PhysioProfile.jsx'
 import TreatmentPlan from './pages/Treatement.jsx'
-import Trainings  from './pages/trainings.jsx'
+import Trainings from './pages/trainings.jsx'
 import Visits from './pages/Visits.jsx'
 
 import Home from './pages/user/Home.jsx'
@@ -58,7 +58,7 @@ const PatientLayout = () => (
 
 const PhysioLayout = () => (
   <>
-    <PhysioHeader/>
+    <PhysioHeader />
     <Outlet />
     <Footer />
   </>
@@ -67,20 +67,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/Register" element={<Register />} />
-        <Route path="/login" element={<Login />} /> 
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/Register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/portal" element={<Portal />} /> {/* login to admin */}
         <Route path="/add-user" element={<AddUser />} />
-<Route path="/create-collaboration" element={<CreateCollaboration />} />
+        <Route path="/create-collaboration" element={<CreateCollaboration />} />
 
-<Route element={<PhysioLayout />}>
-    <Route element={<ProtectedUserRoute />}>
-       
-        <Route path="/video/:filename" element={<VideoPlayer />} />
-        <Route path="/patients/:idUser" element={<Patients />} />
+        {/*biomedical */}
+
         <Route path="/patients-biomedical/:idUser" element={<PatientsBiomedical />} />
-        <Route path="/patients-biomedical" element={<PatientsBiomedical />} /> {/* optional fallback */}
         <Route
           path="/sessions-biomedical/:idBiomedical/:idPhysiotherapist/:idpatient"
           element={<SessionsBiomedical />}
@@ -90,47 +86,60 @@ function App() {
           element={<Biomedical />}
         />
 
-        {/* Read-only biomedical info for physiotherapists */}
-        <Route
-          path="/biomedical-view/:idpatient"
-          element={<BiomedicalView />}
-        />
-        <Route path="/sessions/:iduser/:idpatient" element={<Sessions />} />
-        <Route path="/add-patient" element={<AddPatient />} />
-        
-        <Route path="/therapy/:iduser/:idpatient/:idsession?" element={<Therapy />} />
-        
-        <Route path="*" element={<Navigate to="/login" replace />} />
-        <Route path="/availability" element={<Availability />} />
-        <Route path="/physio-dashboard" element={<PhysioDashboard />} />
-        <Route path="/physioprofile" element={<PhysioProfile />} />
-        <Route path="/treatement/:iduser/:idpatient" element={<TreatmentPlan />} />
-        <Route path="/trainings/:idsession" element={<Trainings />} />
-        <Route path="/visits/:iduser/:idpatient" element={<Visits />} />
- </Route>
-</Route>
 
 
-<Route element={<PatientLayout />}>
-<Route element={<ProtectedPatientRoute />}>
-        <Route path="/home" element={<Home />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/physio" element={<Physio />} />
-        
-        <Route path="/about" element={<About />} />
-        <Route path="/booking/:physioId" element={<Booking />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path="/patient-reservations" element={<PatientReservations />} />
-        <Route path="/view-physio/:id" element={<ViewPhysioProfile />} />
-        <Route path="/session-history/:idBooking" element={<SessionHistory />} />
-        <Route path="/my-trainings/:idsession" element={<PatientTrainings />} />
+
+
+
+        <Route element={<PhysioLayout />}>
+          <Route element={<ProtectedUserRoute />}>
+
+            <Route path="/video/:filename" element={<VideoPlayer />} />
+            <Route path="/patients/:idUser" element={<Patients />} />
+
+
+
+            {/* Read-only biomedical info for physiotherapists */}
+            <Route
+              path="/biomedical-view/:idpatient"
+              element={<BiomedicalView />}
+            />
+            <Route path="/sessions/:iduser/:idpatient" element={<Sessions />} />
+            <Route path="/add-patient" element={<AddPatient />} />
+
+            <Route path="/therapy/:iduser/:idpatient/:idsession?" element={<Therapy />} />
+
+            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="/availability" element={<Availability />} />
+            <Route path="/physio-dashboard" element={<PhysioDashboard />} />
+            <Route path="/physioprofile" element={<PhysioProfile />} />
+            <Route path="/treatement/:iduser/:idpatient" element={<TreatmentPlan />} />
+            <Route path="/trainings/:idsession" element={<Trainings />} />
+            <Route path="/visits/:iduser/:idpatient" element={<Visits />} />
+          </Route>
         </Route>
-        
+
+
+        <Route element={<PatientLayout />}>
+          <Route element={<ProtectedPatientRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/physio" element={<Physio />} />
+
+            <Route path="/about" element={<About />} />
+            <Route path="/booking/:physioId" element={<Booking />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/patient-reservations" element={<PatientReservations />} />
+            <Route path="/view-physio/:id" element={<ViewPhysioProfile />} />
+            <Route path="/session-history/:idBooking" element={<SessionHistory />} />
+            <Route path="/my-trainings/:idsession" element={<PatientTrainings />} />
+          </Route>
+
         </Route>
       </Routes>
-      
+
     </BrowserRouter>
-  
+
   )
 }
 

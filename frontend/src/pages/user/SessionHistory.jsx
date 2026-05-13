@@ -10,11 +10,6 @@ const SessionHistory = () => {
     const [visits, setVisits] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const [showModal, setShowModal] = useState(false);
-    const [rating, setRating] = useState(5);
-    const [comment, setComment] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
     useEffect(() => {
         fetch(`http://localhost:5001/api/session-history/${idBooking}?t=${Date.now()}`)
         .then(res => res.json())
@@ -44,48 +39,6 @@ const SessionHistory = () => {
         }
     }, [sessions]);
 
-   const handleRateSubmit = async () => {
-    const docInfo = sessions[0];
-    const idPatientFromStorage = sessionStorage.getItem('idpatient');
-    const physioId = docInfo?.idUser; 
-
-    if (!physioId || !idPatientFromStorage) {
-        alert("Session data incomplete. Try logging out and back in.");
-        return;
-    }
-
-    setIsSubmitting(true);
-    try {
-        const response = await fetch('http://localhost:5001/api/rate-physio', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                idUser: physioId, 
-                idpatient: idPatientFromStorage, 
-                rating: rating,
-                comment: comment
-            }),
-        });
-
-        // Parse the JSON response from the backend
-        const result = await response.json();
-
-        if (response.ok) {
-            alert("Thank you for your rating!");
-            setShowModal(false);
-            setComment('');
-            window.location.reload(); 
-        } else {
-          
-            alert(result.message || result.error || "An error occurred.");
-        }
-    } catch (error) {
-        console.error("Error submitting rating:", error);
-        alert("Network error. Please try again.");
-    } finally {
-        setIsSubmitting(false);
-    }
-};
     if (loading) return <div className="loader">Loading your health records...</div>;
 
     if (sessions.length === 0) {
@@ -104,7 +57,13 @@ const getImageUrl = () => {
     };
     return (
         <div className="session-history-container">
-            
+            <button 
+                className="back-btn"
+                onClick={() => navigate(`/patient-reservations`)}
+                style={{ width: '140px', float: 'left'}}    
+            >
+                ←Go Back
+            </button>
             <div className="session-page-wrapper">
                 
                 <div className="doc-header-card">
@@ -117,11 +76,6 @@ const getImageUrl = () => {
                         <div className="doc-text">
                             <h1>Dr. {docInfo?.physioName || 'Specialist'}</h1>
                             <p className="spec-text">{docInfo?.physioSpecialty || 'Physiotherapy'}</p>
-                            <div className="button-row">
-                                <button className="rate-session-btn" onClick={() => setShowModal(true)}>
-                                    Rate Specialist
-                                </button>
-                            </div>
                         </div>
                     </div>
                     <div className="rating-box">
@@ -206,43 +160,6 @@ const getImageUrl = () => {
 
              
             </div>
-
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="rate-modal">
-                        <h3>Rate Dr. {docInfo?.physioName}</h3>
-                        <p>How was your overall experience?</p>
-                        <div className="star-picker">
-                            {[1, 2, 3, 4, 5].map(num => (
-                                <span 
-                                    key={num} 
-                                    className={num <= rating ? "star-large active" : "star-large"}
-                                    onClick={() => setRating(num)}
-                                >
-                                    ★
-                                </span>
-                            ))}
-                        </div>
-                        <textarea 
-                            placeholder="Share your feedback (optional)..." 
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                        />
-                        <div className="modal-btns">
-                            <button 
-                                className="submit-rate-btn" 
-                                onClick={handleRateSubmit}
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? "Submitting..." : "Submit Review"}
-                            </button>
-                            <button className="cancel-rate-btn" onClick={() => setShowModal(false)}>
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

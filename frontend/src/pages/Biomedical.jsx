@@ -57,17 +57,17 @@ function Biomedical() {
           const patientData = await resPatient.json()
           setPatientName(patientData.name)
 
-         
+
         } catch (err) {
           console.error(err)
         }
       }
       fetchPatientAndPhysio()
     }
-    if(idphysiotherapist){
+    if (idphysiotherapist) {
       fetch(`http://localhost:5001/api/users/${idphysiotherapist}`)
         .then(res => res.json())
-        .then(data => setPhysioName(data.fullname ))
+        .then(data => setPhysioName(data.fullname))
         .catch(console.error)
     }
   }, [idengineer, idpatient])
@@ -159,21 +159,7 @@ function Biomedical() {
     }
   }
 
-  /* =========================
-     Delete biomedical record
-  ========================= */
-  const handleDelete = async id => {
-    if (!window.confirm('Are you sure you want to delete this record?')) return
-    try {
-      const res = await fetch(`http://localhost:5001/api/biomedical/${id}`, { method: 'DELETE' })
-      const data = await res.json()
-      alert(data.message)
-      setBiomedicalRecords(prev => prev.filter(r => r.idbiomedical !== id))
-    } catch (err) {
-      console.error(err)
-      alert('Delete failed')
-    }
-  }
+
 
   /* =========================
      Edit record
@@ -221,8 +207,9 @@ function Biomedical() {
 
   return (
     <>
-      
+
       <div className="container page-biomedical">
+         <Link to={`/patients-biomedical/${idengineer}`} className="back-btn">← Back to Patients</Link>
         <h2>Biomedical Information</h2>
         <p><strong>Biomedical Engineer:</strong> {engineerName}</p>
         <p><strong>Physiotherapist:</strong> {physioName}</p>
@@ -234,7 +221,7 @@ function Biomedical() {
             <option value="">-- Select Test --</option>
             {biomedicalTestsList.map(t => (
               <option key={t.biomedicalTestsID} value={t.biomedicalTestsID}>
-                {t.name }
+                {t.name}
               </option>
             ))}
           </select>
@@ -286,33 +273,19 @@ function Biomedical() {
                     ))}
                   </td>
                   <td>
-                  <button
-  onClick={() => handleEdit(record)}
-  style={{
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '18px',
-    marginRight: '5px'
-  }}
-  title="Edit record"
->
-  ✏️
-</button>
-
-<button
-  onClick={() => handleDelete(record.idbiomedical)}
-  style={{
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '18px'
-  }}
-  title="Delete record"
->
-  🗑️
-</button>
-
+                    <button
+                      onClick={() => handleEdit(record)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '18px',
+                        marginRight: '5px'
+                      }}
+                      title="Edit record"
+                    >
+                      ✏️
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -320,9 +293,9 @@ function Biomedical() {
           </table>
         )}
 
-        <Link to={`/patients-biomedical/${idengineer}`} className="back-btn">← Back to Patients</Link>
+       
       </div>
-     
+
     </>
   )
 }

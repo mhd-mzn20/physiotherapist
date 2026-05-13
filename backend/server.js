@@ -271,6 +271,17 @@ app.get('/api/patients/:idUser', (req, res) => {
   });
 });
 
+app.put('/api/patients/:idpatient/reject/:idUser', (req, res) => {
+  const { idpatient, idUser } = req.params;
+
+  // Update appointment status
+  const updateAppSql = "UPDATE appointement SET status = 'rejected' WHERE idpatient = ? AND idUser = ?";
+  db.query(updateAppSql, [idpatient, idUser], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+  });
+});
+
 app.get('/api/patients/details/:idpatient', (req, res) => {
   db.query(
     'SELECT * FROM patients WHERE idpatient = ?',
@@ -1266,6 +1277,43 @@ app.delete('/api/delete-experience/:id', (req, res) => {
   });
 });
 
+// --- 4. PUT Update experience ---
+app.put('/api/update-experience/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, company, start_date, end_date, description } = req.body;
+
+  if (!title || !company || !start_date) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const sql = `
+    UPDATE experiences 
+    SET title = ?, company = ?, start_date = ?, end_date = ?, description = ?
+    WHERE idExperience = ?
+  `;
+
+  const values = [
+    title,
+    company,
+    start_date,
+    end_date || null,
+    description || "",
+    id
+  ];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Update Experience Error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Experience not found" });
+    }
+
+    res.json({ success: true, message: "Experience updated successfully" });
+  });
+});
 
 
 // Get all treatment plans for a specific patient
@@ -1453,10 +1501,10 @@ app.post('/api/confirm-booking-payment', (req, res) => {
     injuries
   } = req.body;
 
-  // 2. Create Appointment FIRST to get idBooking
+  // 2. Create Appointment FIRST to get idBooking 
   const appSql = `
         INSERT INTO appointement (idpatient, idUser, idAvailability, status)
-        VALUES (?, ?, ?, 'pending')`;
+        VALUES (?, ?, ?, 'accepted')`;
 
   db.query(appSql, [idpatient, idUser, idAvailability], (errApp, result) => {
     if (errApp) {
@@ -1467,57 +1515,72 @@ app.post('/api/confirm-booking-payment', (req, res) => {
     const idBooking = result.insertId;
 
     const processInvoices = () => {
-        const payStatus = payment_method === 'online' ? 'paid' : 'pending';
-        const invSql = "INSERT INTO invoice (idBooking, amount, payment_method, payment_status) VALUES (?, ?, ?, ?)";
-        db.query(invSql, [idBooking, amount, payment_method, payStatus], (errInv) => {
-          if (errInv) return res.status(500).send(errInv);
+      const payStatus = payment_method === 'online' ? 'paid' : 'pending';
+      const invSql = "INSERT INTO invoice (idBooking, amount, payment_method, payment_status) VALUES (?, ?, ?, ?)";
+      db.query(invSql, [idBooking, amount, payment_method, payStatus], (errInv, invResult) => {
+        if (errInv) return res.status(500).send(errInv);
 
-          // Mark slot as Booked
-          db.query("UPDATE availability SET status = 'booked' WHERE idAvailability = ?", [idAvailability], (errSlot) => {
-            if (errSlot) return res.status(500).send(errSlot);
+        const idInvoice = invResult.insertId;
+
+        // Always mark slot as Booked
+        db.query("UPDATE availability SET status = 'booked' WHERE idAvailability = ?", [idAvailability], (errSlot) => {
+          if (errSlot) return res.status(500).send(errSlot);
+
+          // If paid online, also insert into the payment table
+          if (payStatus === 'paid') {
+            const paymentSql = "INSERT INTO payment (idInvoice) VALUES (?)";
+            db.query(paymentSql, [idInvoice], (errPay) => {
+              if (errPay) {
+                console.error("Payment table insert error:", errPay);
+                return res.status(500).json({ error: "Invoice created but payment record failed: " + errPay.message });
+              }
+              res.status(200).json({ success: true, bookingId: idBooking });
+            });
+          } else {
             res.status(200).json({ success: true, bookingId: idBooking });
-          });
+          }
         });
+      });
     };
 
     const processInjuries = () => {
-        let injList = injuries || [];
-        // Support old format just in case
-        if (injuryName && injList.length === 0) {
-            injList.push({ injuryName, injuryDate, injuryDetails });
-        }
-        
-        // Filter out empty injuries
-        injList = injList.filter(i => i.injuryName && i.injuryName.trim() !== '');
+      let injList = injuries || [];
+      // Support old format just in case
+      if (injuryName && injList.length === 0) {
+        injList.push({ injuryName, injuryDate, injuryDetails });
+      }
 
-        if (injList.length === 0) return processInvoices();
+      // Filter out empty injuries
+      injList = injList.filter(i => i.injuryName && i.injuryName.trim() !== '');
 
-        const injValues = injList.map(i => [idpatient, i.injuryName || '', i.injuryDate || null, i.injuryDetails || '', idBooking]);
-        const injSql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details, idBooking) VALUES ?";
-        db.query(injSql, [injValues], (errInj) => {
-            if (errInj) console.error("Injury Insert Error:", errInj);
-            processInvoices();
-        });
+      if (injList.length === 0) return processInvoices();
+
+      const injValues = injList.map(i => [idpatient, i.injuryName || '', i.injuryDate || null, i.injuryDetails || '', idBooking]);
+      const injSql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details, idBooking) VALUES ?";
+      db.query(injSql, [injValues], (errInj) => {
+        if (errInj) console.error("Injury Insert Error:", errInj);
+        processInvoices();
+      });
     };
 
     const processDiagnostics = () => {
-        let diagList = diagnostics || [];
-        // Support old format just in case
-        if (diagnosisName && diagList.length === 0) {
-            diagList.push({ diagnosisName, diagnosisDescription, diagnosisDate });
-        }
-        
-        // Filter out empty diagnostics
-        diagList = diagList.filter(d => d.diagnosisName && d.diagnosisName.trim() !== '');
+      let diagList = diagnostics || [];
+      // Support old format just in case
+      if (diagnosisName && diagList.length === 0) {
+        diagList.push({ diagnosisName, diagnosisDescription, diagnosisDate });
+      }
 
-        if (diagList.length === 0) return processInjuries();
+      // Filter out empty diagnostics
+      diagList = diagList.filter(d => d.diagnosisName && d.diagnosisName.trim() !== '');
 
-        const diagValues = diagList.map(d => [idpatient, d.diagnosisName || '', d.diagnosisDescription || '', d.diagnosisDate || null, idBooking]);
-        const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed, idBooking) VALUES ?";
-        db.query(diagSql, [diagValues], (errDiag) => {
-            if (errDiag) console.error("Diagnostic Insert Error:", errDiag);
-            processInjuries();
-        });
+      if (diagList.length === 0) return processInjuries();
+
+      const diagValues = diagList.map(d => [idpatient, d.diagnosisName || '', d.diagnosisDescription || '', d.diagnosisDate || null, idBooking]);
+      const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed, idBooking) VALUES ?";
+      db.query(diagSql, [diagValues], (errDiag) => {
+        if (errDiag) console.error("Diagnostic Insert Error:", errDiag);
+        processInjuries();
+      });
     };
 
     // Start processing chain
@@ -1539,7 +1602,7 @@ app.get('/api/patient-reservations/:idpatient', (req, res) => {
             a.status, 
             v.start_time, 
             u.fullname AS physioName, 
-            s.title AS serviceName,
+            GROUP_CONCAT(s.title SEPARATOR ', ') AS serviceName,
             ps.idService AS physioServiceId,
             u.idUser AS idUser,
             p.image AS physioImage,
@@ -1547,10 +1610,11 @@ app.get('/api/patient-reservations/:idpatient', (req, res) => {
         FROM appointement a
         JOIN users u ON a.idUser = u.idUser
         JOIN availability v ON a.idAvailability = v.idAvailability
-        JOIN physio_services ps ON u.idUser = ps.idUser
-        JOIN services s ON ps.idService = s.idService
+        LEFT JOIN physio_services ps ON u.idUser = ps.idUser
+        LEFT JOIN services s ON ps.idService = s.idService
         LEFT JOIN profile p ON u.idUser = p.idUser
         WHERE a.idpatient = ?
+        GROUP BY a.idBooking
         ORDER BY v.available_date DESC, v.start_time DESC`;
 
   db.query(sql, [idpatient], (err, results) => {
@@ -1593,6 +1657,19 @@ app.get('/api/session-history/:idBooking', (req, res) => {
 });
 // Rate Physiotherapist and Update Average Rating
 
+app.get('/api/rate-physio/:idUser/:idpatient', (req, res) => {
+  const { idUser, idpatient } = req.params;
+  const sql = "SELECT rating, comment FROM evaluation WHERE idUser = ? AND idpatient = ?";
+  db.query(sql, [idUser, idpatient], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length > 0) {
+      res.json({ success: true, rating: results[0].rating, comment: results[0].comment });
+    } else {
+      res.json({ success: false, message: "No rating found" });
+    }
+  });
+});
+
 app.post('/api/rate-physio', (req, res) => {
   const { idUser, idpatient, rating, comment } = req.body;
 
@@ -1605,17 +1682,8 @@ app.post('/api/rate-physio', (req, res) => {
   db.query(checkSql, [idUser, idpatient], (errCheck, results) => {
     if (errCheck) return res.status(500).json({ error: errCheck.message });
 
-    if (results.length > 0) {
-      return res.status(400).json({ success: false, message: "You have already rated this specialist." });
-    }
-
-    // 2. Insert the new rating into the evaluation table
-    const insertSql = "INSERT INTO evaluation (idUser, idpatient, rating, comment) VALUES (?, ?, ?, ?)";
-    db.query(insertSql, [idUser, idpatient, rating, comment], (errInsert) => {
-      if (errInsert) return res.status(500).json({ error: "Insert failed: " + errInsert.message });
-
+    const finalizeUpdate = () => {
       // 3. Calculate the average and UPDATE THE PROFILE TABLE
-      // We use IFNULL(..., 0) to ensure we don't try to save a NULL value
       const updateSql = `
                 UPDATE profile 
                 SET rating = (SELECT IFNULL(AVG(rating), 0) FROM evaluation WHERE idUser = ?) 
@@ -1627,7 +1695,6 @@ app.post('/api/rate-physio', (req, res) => {
           return res.status(500).json({ error: "Failed to update profile rating", details: errUpdate.message });
         }
 
-        // Check if a profile record actually exists for this idUser
         if (result.affectedRows === 0) {
           return res.status(404).json({
             success: true,
@@ -1637,7 +1704,23 @@ app.post('/api/rate-physio', (req, res) => {
 
         res.json({ success: true, message: "Rating submitted and profile updated!" });
       });
-    });
+    };
+
+    if (results.length > 0) {
+      // 2a. Update the existing rating
+      const updateRatingSql = "UPDATE evaluation SET rating = ?, comment = ? WHERE idUser = ? AND idpatient = ?";
+      db.query(updateRatingSql, [rating, comment, idUser, idpatient], (errUpdateRating) => {
+        if (errUpdateRating) return res.status(500).json({ error: "Update failed: " + errUpdateRating.message });
+        finalizeUpdate();
+      });
+    } else {
+      // 2b. Insert the new rating into the evaluation table
+      const insertSql = "INSERT INTO evaluation (idUser, idpatient, rating, comment) VALUES (?, ?, ?, ?)";
+      db.query(insertSql, [idUser, idpatient, rating, comment], (errInsert) => {
+        if (errInsert) return res.status(500).json({ error: "Insert failed: " + errInsert.message });
+        finalizeUpdate();
+      });
+    }
   });
 });
 

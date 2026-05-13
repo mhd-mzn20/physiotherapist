@@ -13,12 +13,12 @@ function Patients() {
   const [patients, setPatients] = useState([])
   const [filterText, setFilterText] = useState('')
   const [physioName, setPhysioName] = useState('Physiotherapist')
-  const [editingPatient, setEditingPatient] = useState(null)
+  
   const [editForm, setEditForm] = useState({
     name: '',
     birthdate: '',
     sexe: 1,
-    diagnostic: ''
+    
   })
 
   // ✅ Fetch physiotherapist name
@@ -63,42 +63,21 @@ function Patients() {
 
 
 
-  // ✅ Delete patient
+  // ✅ Delete patient (reject appointment)
   const deletePatient = async (event, idpatient) => {
     event.stopPropagation()
-    if (!window.confirm('Delete this patient?')) return
+    if (!window.confirm('Remove this patient from your list?')) return
     try {
-      await fetch(`http://localhost:5001/api/patients/${idpatient}`, { method: 'DELETE' })
+      await fetch(`http://localhost:5001/api/patients/${idpatient}/reject/${idUser}`, { method: 'PUT' })
       fetchPatients()
     } catch (err) { console.error(err) }
   }
 
-  // ✅ Edit patient modal
-  const editPatient = (event, patient) => {
-    event.stopPropagation()
-    setEditingPatient(patient)
-    setEditForm({
-      name: patient.name,
-      birthdate: patient.birthdate.split('T')[0], // format yyyy-mm-dd
-      sexe: patient.sexe,
-      diagnostic: patient.diagnostic
-    })
-  }
+ 
 
-  const saveEdit = async (event) => {
-    event.preventDefault()
-    try {
-      await fetch(`http://localhost:5001/api/patients/${editingPatient.idpatient}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm)
-      })
-      setEditingPatient(null)
-      fetchPatients()
-    } catch (err) { console.error(err) }
-  }
 
-  const cancelEdit = () => setEditingPatient(null)
+
+
 
   return (
     <>
@@ -111,7 +90,7 @@ function Patients() {
         <input
           type="text"
           className="filter-input"
-          placeholder="Filter patients by name, sex, age, or diagnostic..."
+          placeholder="Filter patients by name, sex, age"
           value={filterText}
           onChange={e => setFilterText(e.target.value)}
         />
@@ -142,13 +121,6 @@ function Patients() {
                 <td>
                   <span
                     className="action-btn"
-                    onClick={e => { e.stopPropagation(); editPatient(e, p); }}
-                    title="Edit Patient"
-                  >
-                    ✏️
-                  </span>
-                  <span
-                    className="action-btn"
                     onClick={e => { e.stopPropagation(); deletePatient(e, p.idpatient); }}
                     title="Delete Patient"
                   >
@@ -174,54 +146,7 @@ function Patients() {
         </table>
       </div>
 
-      {/* Edit Modal */}
-      {editingPatient && (
-        <div className="portal-modal">
-          <div className="portal-modal__content">
-            <h3>Edit Patient</h3>
-            <form onSubmit={saveEdit}>
-              <label>Name</label>
-              <input
-                type="text"
-                value={editForm.name}
-                onChange={e => setEditForm({ ...editForm, name: e.target.value })}
-                required
-              />
-
-              <label>Birthdate</label>
-              <input
-                type="date"
-                value={editForm.birthdate}
-                onChange={e => setEditForm({ ...editForm, birthdate: e.target.value })}
-                required
-              />
-
-              <label>Sex</label>
-              <select
-                value={editForm.sexe}
-                onChange={e => setEditForm({ ...editForm, sexe: parseInt(e.target.value) })}
-                required
-              >
-                <option value={1}>Male</option>
-                <option value={2}>Female</option>
-              </select>
-
-              <label>Diagnostic</label>
-              <input
-                type="text"
-                value={editForm.diagnostic}
-                onChange={e => setEditForm({ ...editForm, diagnostic: e.target.value })}
-                required
-              />
-
-              <div className="buttons">
-                <button className="btn-primary" type="submit">Save</button>
-                <button className="btn-secondary" type="button" onClick={cancelEdit}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+  =
 
 
     </>

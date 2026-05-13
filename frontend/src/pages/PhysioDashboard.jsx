@@ -89,6 +89,12 @@ const PhysioDashboard = () => {
                                             Reject
                                         </button>
                                     </div>
+                                ) : app.status === 'accepted' ? (
+                                    <div className="action-row">
+                                        <button className="accept-btn" style={{backgroundColor: '#28a745', width: '100%'}} onClick={() => handleStatusUpdate(app.idBooking, 'completed')}>
+                                            Mark as Completed
+                                        </button>
+                                    </div>
                                 ) : (
                                     <p className="final-status">Session {app.status}</p>
                                 )}

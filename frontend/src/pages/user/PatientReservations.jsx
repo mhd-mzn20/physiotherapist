@@ -9,6 +9,50 @@ const PatientReservations = () => {
 
     const navigate = useNavigate();
 
+    const [showModal, setShowModal] = useState(false);
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedPhysioId, setSelectedPhysioId] = useState(null);
+    const [selectedPhysioName, setSelectedPhysioName] = useState('');
+
+    const handleRateSubmit = async () => {
+        if (!selectedPhysioId || !idpatient) {
+            alert("Session data incomplete. Try logging out and back in.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('http://localhost:5001/api/rate-physio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idUser: selectedPhysioId, 
+                    idpatient: idpatient, 
+                    rating: rating,
+                    comment: comment
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Thank you for your rating!");
+                setShowModal(false);
+                setComment('');
+                window.location.reload(); 
+            } else {
+                alert(result.message || result.error || "An error occurred.");
+            }
+        } catch (error) {
+            console.error("Error submitting rating:", error);
+            alert("Network error. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const formatServiceNames = (serviceNameValue) => {
         if (!serviceNameValue) return 'General Physiotherapy';
         const names = Array.isArray(serviceNameValue)
@@ -46,7 +90,7 @@ const PatientReservations = () => {
                     {reservations.map((res) => (
                         <div key={res.idBooking} className={`res-card ${res.status}`}>
                             <div className={`res-card-header ${res.status}`}>
-                                {res.status}
+                                {res.status === 'rejected' ?'Cancelled': res.status}
                             </div>
 
                             <div className="res-card-body">
@@ -69,7 +113,7 @@ const PatientReservations = () => {
                                 </div>
 
                                 <div className="res-badge-row">
-                                    <span className={`status-badge-inline ${res.status}`}>{res.status}</span>
+                                    <span className={`status-badge-inline ${res.status}`}> {res.status === 'rejected' ?'Cancelled': res.status}</span>
                                     
                                 </div>
 
@@ -81,6 +125,33 @@ const PatientReservations = () => {
                                         View Session History
                                     </button>
                                 }
+                                {res.status === 'completed' &&
+                                    <button
+                                        className="rate-session-btn"
+                                        onClick={async () => {
+                                            setSelectedPhysioId(res.idUser);
+                                            setSelectedPhysioName(res.physioName);
+                                            try {
+                                                const rateRes = await fetch(`http://localhost:5001/api/rate-physio/${res.idUser}/${idpatient}`);
+                                                const rateData = await rateRes.json();
+                                                if (rateData.success) {
+                                                    setRating(rateData.rating);
+                                                    setComment(rateData.comment || '');
+                                                } else {
+                                                    setRating(5);
+                                                    setComment('');
+                                                }
+                                            } catch (err) {
+                                                console.error("Failed to load past rating:", err);
+                                                setRating(5);
+                                                setComment('');
+                                            }
+                                            setShowModal(true);
+                                        }}
+                                    >
+                                        Rate Specialist
+                                    </button>
+                                }
                             </div>
                         </div>
                     ))}
@@ -88,6 +159,43 @@ const PatientReservations = () => {
 
                 <p className="res-footer-note">Need to change a session? Contact support.</p>
             </div>
+
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="rate-modal">
+                        <h3>Rate Dr. {selectedPhysioName}</h3>
+                        <p>How was your overall experience?</p>
+                        <div className="star-picker">
+                            {[1, 2, 3, 4, 5].map(num => (
+                                <span 
+                                    key={num} 
+                                    className={num <= rating ? "star-large active" : "star-large"}
+                                    onClick={() => setRating(num)}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <textarea 
+                            placeholder="Share your feedback (optional)..." 
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                        <div className="modal-btns">
+                            <button 
+                                className="submit-rate-btn" 
+                                onClick={handleRateSubmit}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? "Submitting..." : "Submit Review"}
+                            </button>
+                            <button className="cancel-rate-btn" onClick={() => setShowModal(false)}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -337,6 +337,7 @@ const updateNewExperienceField = (field, value) => {
                             <input 
                                 type="date" 
                                 value={newExperience.start_date}
+                                max={new Date().toISOString().split('T')[0]}
                                 onChange={(e) => updateNewExperienceField('start_date', e.target.value)}
                             />
                             <input 
@@ -373,6 +374,7 @@ const updateNewExperienceField = (field, value) => {
                                             <input 
                                                 type="date" 
                                                 value={exp.start_date}
+                                                max={new Date().toISOString().split('T')[0]}
                                                 onChange={(e) => updateExperienceField(exp.id, 'start_date', e.target.value)}
                                             />
                                             <input 
