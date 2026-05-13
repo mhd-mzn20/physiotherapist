@@ -145,10 +145,10 @@ const TreatmentPlan = () => {
                     </div>
                 </div>
                 <div className="form-group">
-                    <select name="status" value={formData.status} onChange={handleInputChange}>
+                    <select name="status" value={formData.status} onChange={handleInputChange} disabled={!editingPlan}>
                         <option value="started">Started</option>
-                        <option value="finished">Finished</option>
-                        <option value="canceled">Canceled</option>
+                        <option value="completed">Finished</option>
+                        <option value="cancelled">Canceled</option>
                     </select>
                 </div>
                 <button type="submit" className="btn-save">{editingPlan ? "Update Plan" : "Save Plan"}</button>

@@ -1279,9 +1279,9 @@ app.get('/api/treatment-plans/:idpatient', (req, res) => {
 
 // Create a new treatment plan
 app.post('/api/treatment-plans', (req, res) => {
-  const { idpatient, idUser, plan_name, description, start_date, end_date, status } = req.body;
-  const sql = "INSERT INTO treatment_plan (idpatient, idUser, plan_name, description, start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  db.query(sql, [idpatient, idUser, plan_name, description, start_date, end_date, status], (err, result) => {
+  const { idpatient, idUser, plan_name, description, start_date, end_date } = req.body;
+  const sql = "INSERT INTO treatment_plan (idpatient, idUser, plan_name, description, start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?, 'Started')";
+  db.query(sql, [idpatient, idUser, plan_name, description, start_date, end_date], (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true, idplan: result.insertId });
   });
@@ -1425,36 +1425,8 @@ app.get('/api/patient-active-appointments/:idpatient', (req, res) => {
   });
 });
 
-/* =========================
-   APPOINTMENT ROUTES
-   Book an appointment based on availability.
-========================= */
 
-app.post('/api/book-appointment', (req, res) => {
-  const { idpatient, idUser, idAvailability, appointment_time, injuryName, injuryDate } = req.body;
 
-  // 1. Insert the Appointment
-  const sqlAppoint = `INSERT INTO appointement (idpatient, idUser, idAvailability, status, appointment_time) VALUES (?, ?, ?, 'pending', ?)`;
-
-  db.query(sqlAppoint, [idpatient, idUser, idAvailability, appointment_time], (err, result) => {
-    if (err) return res.status(500).json({ error: "Booking failed" });
-
-    const idBooking = result.insertId;
-
-    // 2. Insert the Injury Record (with idBooking FK)
-    const sqlInjury = `INSERT INTO injury (idpatient, injury_name, injury_date, idBooking) VALUES (?, ?, ?, ?)`;
-
-    db.query(sqlInjury, [idpatient, injuryName, injuryDate, idBooking], (err2) => {
-      if (err2) console.error("Injury insert failed:", err2);
-
-      // 3. Mark the slot as booked
-      const sqlUpdate = "UPDATE availability SET status = 'booked' WHERE idAvailability = ?";
-      db.query(sqlUpdate, [idAvailability], (err3) => {
-        res.json({ success: true, bookingId: idBooking });
-      });
-    });
-  });
-});
 
 
 /* =========================
@@ -1476,7 +1448,9 @@ app.post('/api/confirm-booking-payment', (req, res) => {
     amount,
     injuryName,
     injuryDate,
-    injuryDetails
+    injuryDetails,
+    diagnostics,
+    injuries
   } = req.body;
 
   // 2. Create Appointment FIRST to get idBooking
@@ -1492,37 +1466,62 @@ app.post('/api/confirm-booking-payment', (req, res) => {
 
     const idBooking = result.insertId;
 
-    // 3. INSERT INTO DIAGNOSTIC TABLE with idBooking FK
-    const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed, idBooking) VALUES (?, ?, ?, ?, ?)";
-    db.query(diagSql, [idpatient, diagnosisName, diagnosisDescription, diagnosisDate, idBooking], (errDiag) => {
-      if (errDiag) {
-        console.error("Diagnostic Insert Error:", errDiag);
-        return res.status(500).send(errDiag);
-      }
-
-      // 4. INSERT INTO INJURY TABLE (Including the 'Details' column and idBooking FK)
-      const injurySql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details, idBooking) VALUES (?, ?, ?, ?, ?)";
-      db.query(injurySql, [idpatient, injuryName, injuryDate, injuryDetails, idBooking], (errInj) => {
-        if (errInj) {
-          console.error("Injury Insert Error:", errInj);
-          // Non-blocking error: we continue so the booking still happens
-        }
-
+    const processInvoices = () => {
         const payStatus = payment_method === 'online' ? 'paid' : 'pending';
-
-        // 5. Create Invoice
         const invSql = "INSERT INTO invoice (idBooking, amount, payment_method, payment_status) VALUES (?, ?, ?, ?)";
         db.query(invSql, [idBooking, amount, payment_method, payStatus], (errInv) => {
           if (errInv) return res.status(500).send(errInv);
 
-          // 6. Mark slot as Booked
+          // Mark slot as Booked
           db.query("UPDATE availability SET status = 'booked' WHERE idAvailability = ?", [idAvailability], (errSlot) => {
             if (errSlot) return res.status(500).send(errSlot);
             res.status(200).json({ success: true, bookingId: idBooking });
           });
         });
-      });
-    });
+    };
+
+    const processInjuries = () => {
+        let injList = injuries || [];
+        // Support old format just in case
+        if (injuryName && injList.length === 0) {
+            injList.push({ injuryName, injuryDate, injuryDetails });
+        }
+        
+        // Filter out empty injuries
+        injList = injList.filter(i => i.injuryName && i.injuryName.trim() !== '');
+
+        if (injList.length === 0) return processInvoices();
+
+        const injValues = injList.map(i => [idpatient, i.injuryName || '', i.injuryDate || null, i.injuryDetails || '', idBooking]);
+        const injSql = "INSERT INTO injury (idpatient, injury_name, injury_date, Details, idBooking) VALUES ?";
+        db.query(injSql, [injValues], (errInj) => {
+            if (errInj) console.error("Injury Insert Error:", errInj);
+            processInvoices();
+        });
+    };
+
+    const processDiagnostics = () => {
+        let diagList = diagnostics || [];
+        // Support old format just in case
+        if (diagnosisName && diagList.length === 0) {
+            diagList.push({ diagnosisName, diagnosisDescription, diagnosisDate });
+        }
+        
+        // Filter out empty diagnostics
+        diagList = diagList.filter(d => d.diagnosisName && d.diagnosisName.trim() !== '');
+
+        if (diagList.length === 0) return processInjuries();
+
+        const diagValues = diagList.map(d => [idpatient, d.diagnosisName || '', d.diagnosisDescription || '', d.diagnosisDate || null, idBooking]);
+        const diagSql = "INSERT INTO diagnostic (idpatient, diagnosis_name, description, date_diagnosed, idBooking) VALUES ?";
+        db.query(diagSql, [diagValues], (errDiag) => {
+            if (errDiag) console.error("Diagnostic Insert Error:", errDiag);
+            processInjuries();
+        });
+    };
+
+    // Start processing chain
+    processDiagnostics();
   });
 });
 

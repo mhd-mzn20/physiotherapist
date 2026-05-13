@@ -29,14 +29,9 @@ const Payment = () => {
             idAvailability: state.idAvailability,
             idService: state.idService, // Ensure your backend accepts this now
             amount: state.amount,       // Use the dynamic amount
-            diagnosisName: state.diagnosisName,        // Renamed
-            diagnosisDescription: state.diagnosisDescription, // Renamed
-            diagnosisDate: state.diagnosisDate,        // Renamed
             payment_method: method,
-            amount: state.amount,
-            injuryName: state.injuryName,
-            injuryDate: state.injuryDate,
-            injuryDetails: state.injuryDetails         // Added
+            diagnostics: state.diagnostics || [],
+            injuries: state.injuries || []
         };
 
         try {
@@ -93,6 +88,28 @@ const Payment = () => {
                         <strong>Service</strong>
                         <p>{state.serviceName}</p>
                     </div>
+
+                    {(state.injuries && state.injuries.some(i => i.injuryName)) && (
+                        <div className="summary-item">
+                            <strong>Injuries</strong>
+                            <div style={{fontSize: '0.9em', color: '#555'}}>
+                                {state.injuries.filter(i => i.injuryName).map((i, idx) => (
+                                    <p key={idx} style={{margin: '4px 0'}}>- {i.injuryName} ({i.injuryDate})</p>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {(state.diagnostics && state.diagnostics.some(d => d.diagnosisName)) && (
+                        <div className="summary-item">
+                            <strong>Diagnostics</strong>
+                            <div style={{fontSize: '0.9em', color: '#555'}}>
+                                {state.diagnostics.filter(d => d.diagnosisName).map((d, idx) => (
+                                    <p key={idx} style={{margin: '4px 0'}}>- {d.diagnosisName} ({d.diagnosisDate})</p>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="total-cost-box">
                         <span>Total Amount: ${state.amount}</span>

@@ -37,7 +37,14 @@ const PhysioHeader = () => {
                     className={({ isActive }) => (isActive ? 'ph-nav-link active' : 'ph-nav-link')}
                     onClick={() => setIsMenuOpen(false)}
                 >
-                    👥 Patients
+                     Patients
+                </NavLink>
+                <NavLink 
+                    to="/availability" 
+                    className={({ isActive }) => (isActive ? 'ph-nav-link active' : 'ph-nav-link')}
+                    onClick={() => setIsMenuOpen(false)}
+                >
+                     Availability   
                 </NavLink>
                 
                 <NavLink 
@@ -53,7 +60,7 @@ const PhysioHeader = () => {
                     className={({ isActive }) => (isActive ? 'ph-nav-link active' : 'ph-nav-link')}
                     onClick={() => setIsMenuOpen(false)}
                 >
-                    👨‍⚕️ Profile
+                     Profile
                 </NavLink>
 
                 {/* Mobile Logout Button (Visible only on mobile) */}

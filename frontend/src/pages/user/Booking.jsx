@@ -28,14 +28,8 @@ const [totalPrice, setTotalPrice] = useState(0);
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedDate, setSelectedDate] = useState(getLocalToday());
-    const [diagnosisName, setDiagnosisName] = useState('');
-    const [diagnosisDate, setDiagnosisDate] = useState('');
-    const [diagnosisDescription, setDiagnosisDescription] = useState('');
-    
-    // --- New Injury States ---
-    const [injuryName, setInjuryName] = useState('');
-    const [injuryDate, setInjuryDate] = useState('');
-    const [injuryDetails, setInjuryDetails] = useState('');
+    const [diagnostics, setDiagnostics] = useState([{ diagnosisName: '', diagnosisDate: '', diagnosisDescription: '' }]);
+    const [injuries, setInjuries] = useState([{ injuryName: '', injuryDate: '', injuryDetails: '' }]);
 
     const [loading, setLoading] = useState(false);
 
@@ -114,12 +108,8 @@ useEffect(() => {
                 idService: selectedService.idService,
                 serviceName: selectedService.title,
                 amount: totalPrice,
-                diagnosisName,
-                diagnosisDate,
-                diagnosisDescription,
-                injuryName,
-                injuryDate,
-                injuryDetails
+                diagnostics,
+                injuries
             }
         });
     };
@@ -208,47 +198,89 @@ useEffect(() => {
                     <h3>Booking Summary</h3>
                     <div className="summary-card">
                         {/* --- Injury Record Section --- */}
-                        <div className="injury-input-group">
-    <label>What is the injury?</label>
-    <input type="text" className="sidebar-input" value={injuryName} onChange={(e) => setInjuryName(e.target.value)} />
-    
-    <label>When did it happen?</label>
-    <input type="date" className="sidebar-input" value={injuryDate} min={getLocalToday()} onChange={(e) => setInjuryDate(e.target.value)} required />
+                        {injuries.map((injury, index) => (
+                            <div key={`injury-${index}`} className="injury-input-group" style={{ marginBottom: '15px', paddingBottom: '15px', borderBottom: '1px solid #eee' }}>
+                                <h4>Injury #{index + 1}</h4>
+                                <label>What is the injury?</label>
+                                <input type="text" className="sidebar-input" value={injury.injuryName} onChange={(e) => {
+                                    const newInjuries = [...injuries];
+                                    newInjuries[index].injuryName = e.target.value;
+                                    setInjuries(newInjuries);
+                                }} />
+                                
+                                <label>When did it happen?</label>
+                                <input type="date" className="sidebar-input" value={injury.injuryDate} max={getLocalToday()} onChange={(e) => {
+                                    const newInjuries = [...injuries];
+                                    newInjuries[index].injuryDate = e.target.value;
+                                    setInjuries(newInjuries);
+                                }} />
 
-    {/* New Field */}
-    <label>Injury Details (Optional):</label>
-    <textarea className="sidebar-input" value={injuryDetails} onChange={(e) => setInjuryDetails(e.target.value)} rows="2" />
-</div>
+                                <label>Injury Details (Optional):</label>
+                                <textarea className="sidebar-input" value={injury.injuryDetails} onChange={(e) => {
+                                    const newInjuries = [...injuries];
+                                    newInjuries[index].injuryDetails = e.target.value;
+                                    setInjuries(newInjuries);
+                                }} rows="2" />
+                                
+                                {injuries.length > 1 && (
+                                    <button type="button" onClick={() => setInjuries(injuries.filter((_, i) => i !== index))} style={{ marginTop: '10px', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>Remove Injury</button>
+                                )}
+                            </div>
+                        ))}
+                        <button type="button" onClick={() => setInjuries([...injuries, { injuryName: '', injuryDate: '', injuryDetails: '' }])} style={{ marginBottom: '20px', background: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>+ Add Another Injury</button>
 
-                        <div className="diagnostic-input">
-                            <label>Diagnosis Name:</label>
-                            <input
-                                type="text"
-                                className="sidebar-input"
-                                placeholder="e.g. Knee Strain"
-                                value={diagnosisName}
-                                onChange={(e) => setDiagnosisName(e.target.value)}
-                            />
-                        </div>
-                        <div className="diagnostic-input">
-                            <label>Date of Diagnosis:</label>
-                            <input
-                                type="date"
-                                className="sidebar-input"
-                                max={getLocalToday()}
-                                value={diagnosisDate}
-                                onChange={(e) => setDiagnosisDate(e.target.value)}
-                            />
-                        </div>
-                        <div className="diagnostic-input">
-                            <label>Description:</label>
-                            <textarea
-                                value={diagnosisDescription}
-                                onChange={(e) => setDiagnosisDescription(e.target.value)}
-                                placeholder="Describe the diagnosis..."
-                                rows="3"
-                            />
-                        </div>
+                        {/* --- Diagnostic Record Section --- */}
+                        {diagnostics.map((diag, index) => (
+                            <div key={`diag-${index}`} style={{ marginBottom: '15px', paddingBottom: '15px', borderBottom: '1px solid #eee' }}>
+                                <h4>Diagnosis #{index + 1}</h4>
+                                <div className="diagnostic-input">
+                                    <label>Diagnosis Name:</label>
+                                    <input
+                                        type="text"
+                                        className="sidebar-input"
+                                        placeholder="e.g. Knee Strain"
+                                        value={diag.diagnosisName}
+                                        onChange={(e) => {
+                                            const newDiags = [...diagnostics];
+                                            newDiags[index].diagnosisName = e.target.value;
+                                            setDiagnostics(newDiags);
+                                        }}
+                                    />
+                                </div>
+                                <div className="diagnostic-input">
+                                    <label>Date of Diagnosis:</label>
+                                    <input
+                                        type="date"
+                                        className="sidebar-input"
+                                        max={getLocalToday()}
+                                        value={diag.diagnosisDate}
+                                        onChange={(e) => {
+                                            const newDiags = [...diagnostics];
+                                            newDiags[index].diagnosisDate = e.target.value;
+                                            setDiagnostics(newDiags);
+                                        }}
+                                    />
+                                </div>
+                                <div className="diagnostic-input">
+                                    <label>Description:</label>
+                                    <textarea
+                                        value={diag.diagnosisDescription}
+                                        onChange={(e) => {
+                                            const newDiags = [...diagnostics];
+                                            newDiags[index].diagnosisDescription = e.target.value;
+                                            setDiagnostics(newDiags);
+                                        }}
+                                        placeholder="Describe the diagnosis..."
+                                        rows="3"
+                                        className="sidebar-input"
+                                    />
+                                </div>
+                                {diagnostics.length > 1 && (
+                                    <button type="button" onClick={() => setDiagnostics(diagnostics.filter((_, i) => i !== index))} style={{ marginTop: '10px', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>Remove Diagnosis</button>
+                                )}
+                            </div>
+                        ))}
+                        <button type="button" onClick={() => setDiagnostics([...diagnostics, { diagnosisName: '', diagnosisDate: '', diagnosisDescription: '' }])} style={{ marginBottom: '20px', background: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>+ Add Another Diagnosis</button>
 
                         <button 
                             className="next-step-btn" 
