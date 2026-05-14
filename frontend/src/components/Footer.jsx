@@ -5,7 +5,7 @@ function Footer() {
     <footer className="app-footer">
       <p>© {year} PhysioCare. All rights reserved.</p>
       <div className="app-footer__links">
-        <span>Developped by : Mohammad Abdallah & Mohamad Abbass  </span>
+        <span>Developped by : Mohammad Abdallah  </span>
                      </div>
     </footer>
   )

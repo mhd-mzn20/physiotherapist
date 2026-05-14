@@ -5,7 +5,7 @@ function UserFooter() {
     <footer className="app-footer" style={{backgroundColor: 'white'}}>
       <p>© {year} PhysioCare. All rights reserved.</p>
       <div className="app-footer__links">
-        <span>Developped by : Mohammad Abdallah & Mohamad Abbass  </span>
+        <span>Developped by : Mohammad Abdallah  </span>
                      </div>
     </footer>
   )

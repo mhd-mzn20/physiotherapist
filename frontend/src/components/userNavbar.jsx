@@ -1,11 +1,14 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { IoIosLogOut } from "react-icons/io";
 import { useState, useEffect } from 'react';
+import '../styles/user/userNavbar.css';
 
 function UserNavbar() {
     const idUser = sessionStorage.getItem('idpatient');
     const [name, setName] = useState('User');
-    
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (idUser) {
             fetch(`http://localhost:5001/patients/${idUser}`)
@@ -17,32 +20,82 @@ function UserNavbar() {
 
     const handleLogout = () => {
         sessionStorage.clear();
+        navigate('/login');
+    };
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
+    const closeMenu = () => {
+        setIsMenuOpen(false);
     };
 
     return (
-        <header className="navbar">
-            <div className="logo">
-                <span className="logo-icon">⚕️</span>
-                <div className="logo-text">
-                    <strong>PhysioCare</strong>
-                    
-                </div>
+        <header className="user-navbar">
+            <div className="un-brand">
+                <span className="un-logo-icon">⚕️</span>
+                <span className="un-brand-name">PhysioCare</span>
             </div>
-            <nav className="nav-links">
-              
-                <Link to={`/home`}>Home</Link>
-                
-                <Link to="/services">Services</Link>
-                <Link to="/physio">Find a Physio</Link>
-                <Link to="/about">About</Link>
+
+            {/* Mobile hamburger toggle */}
+            <button className="un-mobile-toggle" onClick={toggleMenu} aria-label="Toggle menu">
+                {isMenuOpen ? '✕' : '☰'}
+            </button>
+
+            <nav className={`un-nav ${isMenuOpen ? 'open' : ''}`}>
+                <NavLink
+                    to="/home"
+                    className={({ isActive }) => isActive ? 'active' : ''}
+                    onClick={closeMenu}
+                >
+                    Home
+                </NavLink>
+                <NavLink
+                    to="/services"
+                    className={({ isActive }) => isActive ? 'active' : ''}
+                    onClick={closeMenu}
+                >
+                    Services
+                </NavLink>
+                <NavLink
+                    to="/physio"
+                    className={({ isActive }) => isActive ? 'active' : ''}
+                    onClick={closeMenu}
+                >
+                    Find a Physio
+                </NavLink>
+                <NavLink
+                    to="/about"
+                    className={({ isActive }) => isActive ? 'active' : ''}
+                    onClick={closeMenu}
+                >
+                    About
+                </NavLink>
+
+                {/* Mobile-only: appointments + welcome + logout */}
+                <Link
+                    to="/patient-reservations"
+                    className="un-appointments-mobile"
+                    onClick={closeMenu}
+                >
+                    My Appointments
+                </Link>
+                <button className="un-logout-mobile" onClick={handleLogout}>
+                    Logout
+                </button>
             </nav>
-            <Link to="/patient-reservations" className="btn-book-nav">My Appointments</Link>
-            <p className="welcome-message">Welcome, {name}</p>
-            
-           
-            <Link to="/login" className="logo-icon" onClick={handleLogout}>
-                <IoIosLogOut />
-            </Link>
+
+            {/* Desktop actions */}
+            <div className={`un-actions ${isMenuOpen ? 'open' : ''}`}>
+                <Link to="/patient-reservations" className="un-appointments-btn">
+                    My Appointments
+                </Link>
+                <p className="un-welcome">Welcome, <strong>{name}</strong></p>
+                <Link to="/login" className="un-logout-btn" onClick={handleLogout} aria-label="Logout">
+                    <IoIosLogOut />
+                </Link>
+            </div>
         </header>
     );
 }

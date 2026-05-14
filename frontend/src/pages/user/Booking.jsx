@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import '../../styles/user/booking.css';
-import { TextAlignCenter } from 'lucide-react';
+
 
 const Booking = () => {
     const { physioId } = useParams();
@@ -122,7 +122,7 @@ useEffect(() => {
             <div className="booking-container">
                
                 <header className="booking-header">
-               <div className="back-btn " onClick={() => navigate(-1)} style={{float:'left'}}>
+               <div className="back-btn" onClick={() => navigate(-1)}>
                 &#8592; Back
             </div>  
                    
@@ -199,7 +199,7 @@ useEffect(() => {
                     <div className="summary-card">
                         {/* --- Injury Record Section --- */}
                         {injuries.map((injury, index) => (
-                            <div key={`injury-${index}`} className="injury-input-group" style={{ marginBottom: '15px', paddingBottom: '15px', borderBottom: '1px solid #eee' }}>
+                            <div key={`injury-${index}`} className="injury-input-group">
                                 <h4>Injury #{index + 1}</h4>
                                 <label>What is the injury?</label>
                                 <input type="text" className="sidebar-input" value={injury.injuryName} onChange={(e) => {
@@ -223,15 +223,15 @@ useEffect(() => {
                                 }} rows="2" />
                                 
                                 {injuries.length > 1 && (
-                                    <button type="button" onClick={() => setInjuries(injuries.filter((_, i) => i !== index))} style={{ marginTop: '10px', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>Remove Injury</button>
+                                    <button type="button" className="btn-remove-record" onClick={() => setInjuries(injuries.filter((_, i) => i !== index))}>Remove Injury</button>
                                 )}
                             </div>
                         ))}
-                        <button type="button" onClick={() => setInjuries([...injuries, { injuryName: '', injuryDate: '', injuryDetails: '' }])} style={{ marginBottom: '20px', background: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>+ Add Another Injury</button>
+                        <button type="button" className="btn-add-record" onClick={() => setInjuries([...injuries, { injuryName: '', injuryDate: '', injuryDetails: '' }])}>+ Add Another Injury</button>
 
                         {/* --- Diagnostic Record Section --- */}
                         {diagnostics.map((diag, index) => (
-                            <div key={`diag-${index}`} style={{ marginBottom: '15px', paddingBottom: '15px', borderBottom: '1px solid #eee' }}>
+                            <div key={`diag-${index}`} className="injury-input-group">
                                 <h4>Diagnosis #{index + 1}</h4>
                                 <div className="diagnostic-input">
                                     <label>Diagnosis Name:</label>
@@ -276,11 +276,11 @@ useEffect(() => {
                                     />
                                 </div>
                                 {diagnostics.length > 1 && (
-                                    <button type="button" onClick={() => setDiagnostics(diagnostics.filter((_, i) => i !== index))} style={{ marginTop: '10px', background: 'red', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>Remove Diagnosis</button>
+                                    <button type="button" className="btn-remove-record" onClick={() => setDiagnostics(diagnostics.filter((_, i) => i !== index))}>Remove Diagnosis</button>
                                 )}
                             </div>
                         ))}
-                        <button type="button" onClick={() => setDiagnostics([...diagnostics, { diagnosisName: '', diagnosisDate: '', diagnosisDescription: '' }])} style={{ marginBottom: '20px', background: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>+ Add Another Diagnosis</button>
+                        <button type="button" className="btn-add-record" onClick={() => setDiagnostics([...diagnostics, { diagnosisName: '', diagnosisDate: '', diagnosisDescription: '' }])}>+ Add Another Diagnosis</button>
 
                         <button 
                             className="next-step-btn" 
