@@ -137,11 +137,11 @@ const TreatmentPlan = () => {
                 <div className="date-row">
                     <div className="form-group">
                         <label>Start Date</label>
-                        <input type="date" name="start_date" value={formData.start_date} onChange={handleInputChange} required />
+                        <input type="date" name="start_date" value={formData.start_date} min={new Date().toISOString().split('T')[0]} onChange={handleInputChange} required />
                     </div>
                     <div className="form-group">
                         <label>End Date</label>
-                        <input type="date" name="end_date" value={formData.end_date} onChange={handleInputChange} required />
+                        <input type="date" name="end_date" value={formData.end_date} min={new Date().toISOString().split('T')[0]} onChange={handleInputChange} required />
                     </div>
                 </div>
                 <div className="form-group">

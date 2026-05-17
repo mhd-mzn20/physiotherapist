@@ -11,16 +11,20 @@ const Register = () => {
     password: '',
     confirmPassword: ''
   });
-  
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let value = e.target.value;
+    if (e.target.name === 'name') {
+      value = value.replace(/\s/g, '');
+    }
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -33,7 +37,7 @@ const Register = () => {
         body: JSON.stringify({
           name: formData.name,
           birthdate: formData.birthdate,
-          sexe: formData.sexe, 
+          sexe: formData.sexe,
           password: formData.password
         }),
       });
@@ -53,17 +57,17 @@ const Register = () => {
 
   return (
     <div className="login-page">
-    <Header showPortalLink={false} />
+      <Header showPortalLink={false} />
       <div className="container page-register">
         <h2>Create Patient Account</h2>
         <form onSubmit={handleRegister}>
-          <label>Full Name</label>
+          <label>Name</label>
           <input type="text" name="name" value={formData.name} onChange={handleChange} required />
 
           <label>Birthdate</label>
-          <input type="date" name="birthdate" value={formData.birthdate} onChange={handleChange} required />
+          <input type="date" name="birthdate" value={formData.birthdate} max={new Date().toISOString().split('T')[0]} onChange={handleChange} required />
 
-          <label>Sexe</label>
+          <label>Gender</label>
           <select name="sexe" value={formData.sexe} onChange={handleChange} required>
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
@@ -78,9 +82,9 @@ const Register = () => {
 
           <div className="buttons">
             <button type="submit" className="btn-primary signup">Sign Up</button>
-              
+
           </div>
-          <p style={{textAlign:'center' }}>already have an account? <a href="/login">Login here</a></p>
+          <p style={{ textAlign: 'center' }}>already have an account? <a href="/login">Login here</a></p>
         </form>
       </div>
       <Footer />
