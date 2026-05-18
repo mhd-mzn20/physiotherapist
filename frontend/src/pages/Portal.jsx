@@ -126,6 +126,13 @@ function Portal() {
 
 <button
   className="btn-secondary"
+  onClick={() => navigate('/admin-patients')}
+>
+  🧑‍⚕️ All Patients
+</button>
+
+<button
+  className="btn-secondary"
   onClick={handleLogout}
 >
   🚪 Logout

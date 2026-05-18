@@ -254,6 +254,26 @@ app.put('/api/users/:id', async (req, res) => {
    PATIENT ROUTES
 ========================= */
 
+// GET all patients (admin view) with their physiotherapist name
+app.get('/api/admin/patients', (req, res) => {
+  const sql = `
+    SELECT DISTINCT
+      p.idpatient,
+      p.name,
+      p.birthdate,
+      p.sexe,
+      u.fullname AS physiotherapistName
+    FROM patients p
+    LEFT JOIN appointement a ON p.idpatient = a.idpatient AND a.status = 'accepted'
+    LEFT JOIN users u ON a.idUser = u.idUser
+    ORDER BY p.name ASC
+  `;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ message: 'Database error', error: err });
+    res.json(result);
+  });
+});
+
 app.get('/api/patients/:idUser', (req, res) => {
   // We join patients with appointments to filter by status and physiotherapist
   const sql = `

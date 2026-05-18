@@ -26,6 +26,7 @@ import Biomedical from './pages/Biomedical.jsx'
 
 import AddUser from './pages/AddUser.jsx'
 import BiomedicalView from './pages/BiomedicalView.jsx'
+import AdminPatients from './pages/AdminPatients.jsx'
 //mhd-mzn
 import Availability from './pages/availibility.jsx'
 import PhysioDashboard from './pages/PhysioDashboard.jsx'
@@ -74,6 +75,7 @@ function App() {
         <Route path="/portal" element={<Portal />} /> {/* login to admin */}
         <Route path="/add-user" element={<AddUser />} />
         <Route path="/create-collaboration" element={<CreateCollaboration />} />
+        <Route path="/admin-patients" element={<AdminPatients />} />
 
         {/*biomedical */}
 
