@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-
+import '../styles/createCollaboration.css'
 
 
 function CreateCollaboration() {
@@ -48,7 +48,7 @@ function CreateCollaboration() {
   const fetchCollaborations = async () => {
     try {
       const res = await fetch("http://localhost:5001/api/collaborations");
-      const data = await res.json(); 
+      const data = await res.json();
       // data = [{idphysiotherapist, idbiomedicalengineer, engName}]
       const collabMap = {};
       data.forEach((row) => {
@@ -127,108 +127,89 @@ function CreateCollaboration() {
   );
 
   return (
-<>
-      
+    <div className="collab-page">
 
-    <div className="container page-therapy">
-      <button onClick={() => navigate('/portal')} className="back-btn2">←Back to Portal</button>   
-      <h2>Create Collaboration</h2>
+      {/* ── Header ── */}
+      <div className="collab-header">
+        <button onClick={() => navigate('/portal')} className="back-btn2">← Back to Portal</button>
+        <h1>Create Collaboration</h1>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Biomedical Engineer</label>
-          <br />
-          <select value={selectedEngineer} onChange={handleEngineerChange}>
-            <option value="">Select Engineer</option>
-            {engineers.map((eng) => (
-              <option key={eng.idUser} value={eng.idUser}>
-                {eng.fullname}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* ── Form card ── */}
+      <div className="collab-card">
+        <form onSubmit={handleSubmit}>
 
-        <br />
+          <div className="collab-form-group">
+            <label>Biomedical Engineer</label>
+            <select value={selectedEngineer} onChange={handleEngineerChange} required>
+              <option value="">— Select Engineer —</option>
+              {engineers.map((eng) => (
+                <option key={eng.idUser} value={eng.idUser}>
+                  {eng.fullname}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label>Search Physiotherapist</label>
-          <br />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+          <div className="collab-form-group">
+            <label>Search Physiotherapist</label>
+            <input
+              type="text"
+              placeholder="Search by name…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-        <br />
+          <div className="collab-form-group">
+            <h3>Physiotherapists</h3>
+            {filteredPhysios.length === 0 && (
+              <p className="collab-empty">No physiotherapists found.</p>
+            )}
+            <div className="physio-grid">
+              {filteredPhysios.map((physio) => {
+                const isSelected = selectedPhysios.includes(Number(physio.idUser));
+                return (
+                  <div
+                    key={physio.idUser}
+                    className={`physio-item ${isSelected ? 'selected' : ''}`}
+                    onClick={() => togglePhysio(physio.idUser)}
+                  >
+                    <span>{physio.fullname}</span>
+                    {isSelected && <span className="check">✓</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
-        <div>
-          <h3>Physiotherapists</h3>
-          {filteredPhysios.length === 0 && <p>No physiotherapists found.</p>}
+          <button type="submit" className="primary-btn">Save Collaboration</button>
+        </form>
+      </div>
 
-          {filteredPhysios.map((physio) => {
-            const isSelected = selectedPhysios.includes(Number(physio.idUser));
-            return (
-              <div
-                key={physio.idUser}
-                onClick={() => togglePhysio(physio.idUser)}
-                style={{
-                  padding: "10px",
-                  margin: "5px 0",
-                  border: "1px solid #ccc",
-                  cursor: "pointer",
-                  backgroundColor: isSelected ? "#cce5ff" : "#f9f9f9",
-                }}
-              >
-                {physio.fullname} {isSelected && "✓"}
+      {/* ── Existing collaborations ── */}
+      <div className="collab-card">
+        <h2>Previous Collaborations</h2>
+        {physiotherapists.length === 0 ? (
+          <p className="collab-empty">No collaborations yet.</p>
+        ) : (
+          <div className="collab-grid">
+            {physiotherapists.map((physio) => (
+              <div key={physio.idUser} className="collab-item">
+                <h4>{physio.fullname}</h4>
+                <p>{collaborations[physio.idUser]?.length || 0} Engineer(s)</p>
+                <div className="badge-container">
+                  {(collaborations[physio.idUser] || []).map((eng, i) => (
+                    <span key={i} className="badge">{eng}</span>
+                  ))}
+                </div>
               </div>
-            );
-          })}
-        </div>
-
-        <br />
-
-        <button type="submit">Save Collaboration</button>
-      </form>
-
-      <hr />
-
-      <h2>Previous Collaborations</h2>
-      {physiotherapists.map((physio) => (
-        <div
-          key={physio.idUser}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            margin: "5px 0",
-          }}
-        >
-          <strong>{physio.fullname}</strong> -{" "}
-          {collaborations[physio.idUser]?.length || 0} Engineer(s)
-          <div style={{ marginTop: "5px" }}>
-            {(collaborations[physio.idUser] || []).map((eng, i) => (
-              <span
-                key={i}
-                style={{
-                  padding: "2px 5px",
-                  margin: "0 3px",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  borderRadius: "3px",
-                  fontSize: "12px",
-                }}
-              >
-                {eng}
-              </span>
             ))}
           </div>
-        </div>
-      ))}
+        )}
+      </div>
+
     </div>
-
-    </>
-
   );
 }
 

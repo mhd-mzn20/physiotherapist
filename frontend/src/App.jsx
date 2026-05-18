@@ -5,6 +5,8 @@ import PhysioHeader from './components/PhysioHeader.jsx'
 import Footer from './components/Footer.jsx'
 import UserFooter from './components/userFooter.jsx'
 import { ProtectedUserRoute, ProtectedPatientRoute } from './components/ProtectedRoute';
+import AdminHeader from './components/AdminHeader.jsx';
+
 
 import Login from './pages/Login.jsx'
 import { Outlet } from 'react-router-dom';
@@ -27,6 +29,7 @@ import Biomedical from './pages/Biomedical.jsx'
 import AddUser from './pages/AddUser.jsx'
 import BiomedicalView from './pages/BiomedicalView.jsx'
 import AdminPatients from './pages/AdminPatients.jsx'
+import AdminServices from './pages/AdminServices.jsx'
 //mhd-mzn
 import Availability from './pages/availibility.jsx'
 import PhysioDashboard from './pages/PhysioDashboard.jsx'
@@ -57,6 +60,13 @@ const PatientLayout = () => (
   </>
 );
 
+const AdminLayout = () => (
+  <>
+    <AdminHeader />
+    <Outlet />
+  </>
+);
+
 const PhysioLayout = () => (
   <>
     <PhysioHeader />
@@ -71,23 +81,25 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-         <Route element={<ProtectedUserRoute />}>
-        <Route path="/portal" element={<Portal />} /> {/* login to admin */}
-        <Route path="/add-user" element={<AddUser />} />
-        <Route path="/create-collaboration" element={<CreateCollaboration />} />
-        <Route path="/admin-patients" element={<AdminPatients />} />
+        <Route element={<AdminLayout />}>
+          <Route element={<ProtectedUserRoute />}>
+            <Route path="/portal" element={<Portal />} />
+            <Route path="/add-user" element={<AddUser />} />
+            <Route path="/create-collaboration" element={<CreateCollaboration />} />
+            <Route path="/admin-patients" element={<AdminPatients />} />
+            <Route path="/admin-services" element={<AdminServices />} />
 
-        {/*biomedical */}
-
-        <Route path="/patients-biomedical/:idUser" element={<PatientsBiomedical />} />
-        <Route
-          path="/sessions-biomedical/:idBiomedical/:idPhysiotherapist/:idpatient"
-          element={<SessionsBiomedical />}
-        />
-        <Route
-          path="/biomedical/:idengineer/:idphysiotherapist/:idpatient"
-          element={<Biomedical />}
-        />
+            {/*biomedical */}
+            <Route path="/patients-biomedical/:idUser" element={<PatientsBiomedical />} />
+            <Route
+              path="/sessions-biomedical/:idBiomedical/:idPhysiotherapist/:idpatient"
+              element={<SessionsBiomedical />}
+            />
+            <Route
+              path="/biomedical/:idengineer/:idphysiotherapist/:idpatient"
+              element={<Biomedical />}
+            />
+          </Route>
         </Route>
 
 

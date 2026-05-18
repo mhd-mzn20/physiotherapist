@@ -25,7 +25,7 @@ const PhysioHeader = () => {
                     <p>Physiotherapist Portal</p>
                 </div>
             </div>
-            <button className={isAdmin ? 'shown' : 'hidden'} onClick={() => navigate(-1) }>
+            <button className={isAdmin ? 'shown' : 'hidden'} onClick={() => navigate('/portal') }>
                 Go Back
             </button>
 

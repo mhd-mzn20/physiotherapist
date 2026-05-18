@@ -274,6 +274,28 @@ app.get('/api/admin/patients', (req, res) => {
   });
 });
 
+// GET all appointments for a patient (admin view)
+app.get('/api/admin/patient-appointments/:idpatient', (req, res) => {
+  const sql = `
+    SELECT
+      a.idBooking,
+      a.status,
+      v.available_date,
+      v.start_time AS appointment_time,
+      u.fullname AS physiotherapistName,
+      a.created_at
+    FROM appointement a
+    LEFT JOIN availability v ON a.idAvailability = v.idAvailability
+    LEFT JOIN users u ON a.idUser = u.idUser
+    WHERE a.idpatient = ?
+    ORDER BY a.idBooking DESC
+  `;
+  db.query(sql, [req.params.idpatient], (err, result) => {
+    if (err) return res.status(500).json({ message: 'Database error', error: err });
+    res.json(result);
+  });
+});
+
 app.get('/api/patients/:idUser', (req, res) => {
   // We join patients with appointments to filter by status and physiotherapist
   const sql = `
@@ -1939,6 +1961,83 @@ app.delete('/api/visits/:id_visit', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (result.affectedRows === 0) return res.status(404).json({ message: 'Visit not found' });
     res.json({ success: true, message: 'Visit deleted' });
+  });
+});
+
+/* =========================
+   SERVICES ROUTES (Admin CRUD)
+========================= */
+
+// GET all services
+app.get('/api/services', (req, res) => {
+  db.query('SELECT * FROM services ORDER BY idService ASC', (err, result) => {
+    if (err) return res.status(500).json({ message: 'Database error', error: err });
+    res.json(result);
+  });
+});
+
+// POST create a new service
+app.post('/api/services', (req, res) => {
+  const { title, description, subDesc, icon } = req.body;
+  if (!title || !title.trim()) {
+    return res.status(400).json({ message: 'Title is required' });
+  }
+  db.query(
+    'INSERT INTO services (title, description, subDesc, icon) VALUES (?, ?, ?, ?)', 
+    [title.trim(), description || null, subDesc || null, icon || null], 
+    (err, result) => {
+      if (err) return res.status(500).json({ message: 'Database error', error: err });
+      res.status(201).json({ idService: result.insertId, title: title.trim(), description, subDesc, icon });
+    }
+  );
+});
+
+// PUT update a service
+app.put('/api/services/:idService', (req, res) => {
+  const { title, description, subDesc, icon } = req.body;
+  if (!title || !title.trim()) {
+    return res.status(400).json({ message: 'Title is required' });
+  }
+  db.query(
+    'UPDATE services SET title = ?, description = ?, subDesc = ?, icon = ? WHERE idService = ?',
+    [title.trim(), description || null, subDesc || null, icon || null, req.params.idService],
+    (err, result) => {
+      if (err) return res.status(500).json({ message: 'Database error', error: err });
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'Service not found' });
+      res.json({ message: 'Service updated successfully' });
+    }
+  );
+});
+
+// DELETE a service
+app.delete('/api/services/:idService', (req, res) => {
+  db.query(
+    'DELETE FROM services WHERE idService = ?',
+    [req.params.idService],
+    (err, result) => {
+      if (err) return res.status(500).json({ message: 'Database error', error: err });
+      if (result.affectedRows === 0) return res.status(404).json({ message: 'Service not found' });
+      res.json({ message: 'Service deleted successfully' });
+    }
+  );
+});
+
+/* =========================
+   EVALUATION ROUTES
+========================= */
+
+// GET last 5 evaluations for a specific physiotherapist (rating, comment, created_at only — no name)
+app.get('/api/evaluations/:idUser', (req, res) => {
+  const sql = `
+    SELECT rating, comment, created_at
+    FROM evaluation
+    WHERE idUser = ?
+    ORDER BY created_at DESC
+    LIMIT 5
+  `;
+  db.query(sql, [req.params.idUser], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error', error: err });
+    res.json(results);
   });
 });
 

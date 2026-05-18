@@ -97,6 +97,8 @@ useEffect(() => {
         if (!physioData?.fullname) return alert("Loading physiotherapist information, please wait...");
         if (!selectedSlot) return alert("Please select a time slot!");
         if (!selectedService) return alert("Please select a service!");
+        if (diagnostics.some(d => !d.diagnosisName || !d.diagnosisDate )) return alert("Please fill in all fields for diagnostics");
+        
         navigate('/payment', {
             state: {
                 idpatient: idpatient,

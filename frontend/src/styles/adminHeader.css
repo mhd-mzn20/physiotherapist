@@ -1,0 +1,172 @@
+/* =========================
+   ADMIN HEADER STYLES
+   Matching physioHeader style
+========================= */
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-bottom: 2px solid #eef2ff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* Brand */
+.admin-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-header__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    color: white;
+    font-weight: 800;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+    flex-shrink: 0;
+}
+
+.admin-header__title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+}
+
+.admin-header__sub {
+    margin: 2px 0 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Nav */
+.admin-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.admin-nav-btn {
+    text-decoration: none;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: 'Inter', -apple-system, sans-serif;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.admin-nav-btn:hover {
+    background-color: #f8fafc;
+    color: #4f46e5;
+}
+
+.admin-nav-btn.active {
+    background-color: #eef2ff;
+    color: #4f46e5;
+}
+
+/* Logout button */
+.admin-nav-btn--logout {
+    background-color: #fff;
+    border: 1px solid #fee2e2;
+    color: #475569;
+    margin-left: 8px;
+}
+
+.admin-nav-btn--logout:hover {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+    color: #ef4444;
+}
+
+/* Mobile toggle */
+.admin-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .admin-header {
+        padding: 16px 20px;
+    }
+
+    .admin-nav-btn {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-mobile-toggle {
+        display: block;
+    }
+
+    .admin-header__nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #ffffff;
+        flex-direction: column;
+        padding: 16px 20px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid #e2e8f0;
+        gap: 0;
+    }
+
+    .admin-header__nav.open {
+        display: flex;
+    }
+
+    .admin-nav-btn {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 8px;
+        justify-content: flex-start;
+    }
+
+    .admin-nav-btn--logout {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        border-radius: 0;
+        margin-left: 0;
+        margin-top: 10px;
+        color: #ef4444;
+        background: none;
+    }
+
+    .admin-nav-btn--logout:hover {
+        background: #fef2f2;
+        border-color: #e2e8f0;
+    }
+}

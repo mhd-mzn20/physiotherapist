@@ -10,6 +10,7 @@ const PhysioProfile = () => {
     const [editingExperienceId, setEditingExperienceId] = useState(null);
     const [allServices, setAllServices] = useState([]);
     const [experiences, setExperiences] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [newExperience, setNewExperience] = useState({
         title: '',
         company: '',
@@ -32,6 +33,7 @@ const PhysioProfile = () => {
     useEffect(() => {
         loadProfileData();
         loadExperiences();
+        loadEvaluations();
     }, [idUser]);
 // In PhysioProfile.jsx, update the loadProfileData function:
 const loadProfileData = async () => {
@@ -68,6 +70,15 @@ const loadExperiences = async () => {
         setExperiences(data || []);
     } catch (err) {
         console.error("Error loading experiences:", err);
+    }
+};
+
+const loadEvaluations = async () => {
+    try {
+        const data = await fetch(`http://localhost:5001/api/evaluations/${idUser}`).then(res => res.json());
+        setReviews(Array.isArray(data) ? data : []);
+    } catch (err) {
+        console.error("Error loading evaluations:", err);
     }
 };
 
@@ -417,6 +428,43 @@ const updateNewExperienceField = (field, value) => {
                         </div>
                     ) : (
                         <p className="no-exp-text">No work experience added yet</p>
+                    )}
+                </div>
+
+                <div className="reviews-section">
+                    <div className="reviews-header">
+                        <h3>⭐ Patient Reviews</h3>
+                        <div className="overall-rating">
+                            <span className="overall-rating-score">{Number(profile.rating).toFixed(1)}</span>
+                            <span className="overall-rating-label">/ 5 overall</span>
+                        </div>
+                    </div>
+                    <p className="reviews-subtitle">Showing the 5 most recent reviews</p>
+                    {reviews.length === 0 ? (
+                        <p className="no-reviews-text">No reviews yet.</p>
+                    ) : (
+                        <div className="reviews-list">
+                            {reviews.map((review, idx) => (
+                                <div key={idx} className="review-card">
+                                    <div className="review-stars">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <span key={i} className={i < review.rating ? 'star filled' : 'star'}>
+                                                ★
+                                            </span>
+                                        ))}
+                                        <span className="review-rating-num">{review.rating}/5</span>
+                                    </div>
+                                    {review.comment && (
+                                        <p className="review-comment">&ldquo;{review.comment}&rdquo;</p>
+                                    )}
+                                    <p className="review-date">
+                                        {new Date(review.created_at).toLocaleDateString('en-US', {
+                                            year: 'numeric', month: 'long', day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     )}
                 </div>
 

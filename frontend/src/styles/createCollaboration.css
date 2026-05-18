@@ -1,199 +1,295 @@
-/* ===============================
-   PAGE BACKGROUND
-=================================*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Page wrapper ── */
 .collab-page {
-  background: linear-gradient(135deg, #eef2ff, #f8fafc);
-  padding: 60px 20px;
   min-height: 100vh;
-margin-top: 20px; /* only top margin */
+  padding: 48px 40px 80px;
+  background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 50%, #f8fafc 100%);
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
 }
 
+/* ── Header ── */
+.collab-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
 
-/* ===============================
-   MAIN CARD
-=================================*/
+.collab-header h1 {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+}
+
+/* ── Back button (reused across pages) ── */
+.back-btn2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 1.5px solid #bfdbfe;
+  background: #fff;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.back-btn2:hover {
+  background: #eff6ff;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+  transform: translateY(-2px);
+}
+
+/* ── Cards ── */
 .collab-card {
-
-  background: #ffffff;
+  background: #fff;
   max-width: 1100px;
-  margin: 0 auto 40px auto;
-  padding: 40px;
-  border-radius: 18px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
-  transition: 0.3s ease;
+  margin: 0 auto 32px auto;
+  padding: 40px 44px;
+  border-radius: 20px;
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.04),
+    0 20px 48px rgba(15, 23, 42, 0.09);
+  border: 1px solid #e2e8f0;
 }
 
 .collab-card h2 {
-  margin-bottom: 30px;
-  font-size: 26px;
-  font-weight: 600;
-  color: #1f2937;
+  margin: 0 0 24px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-
-/* ===============================
-   FORM
-=================================*/
-.form-group {
-  margin-bottom: 25px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
+.collab-card h3 {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
   color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 0.8rem;
 }
 
-.form-group input,
-.form-group select {
+/* ── Form groups ── */
+.collab-form-group {
+  margin-bottom: 24px;
+}
+
+.collab-form-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.collab-form-group input,
+.collab-form-group select {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  transition: 0.2s ease;
-  background: #f9fafb;
+  padding: 13px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  font-size: 0.97rem;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.collab-form-group input:focus,
+.collab-form-group select:focus {
   outline: none;
-  border-color: #6366f1;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: #4f46e5;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
 
+.collab-form-group input::placeholder {
+  color: #cbd5e1;
+}
 
-/* ===============================
-   PHYSIO GRID
-=================================*/
+/* ── Physio selection grid ── */
 .physio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 20px;
-  margin-bottom: 30px;
-  max-height: 320px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  max-height: 340px;
   overflow-y: auto;
-  padding-right: 6px;
+  padding: 4px 2px;
 }
 
+.physio-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.physio-grid::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 6px; }
+.physio-grid::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+
 .physio-item {
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s ease;
-  background: #f9fafb;
-  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.9rem;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .physio-item:hover {
-  border-color: #6366f1;
-  transform: translateY(-2px);
+  border-color: #4f46e5;
+  background: #eff6ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
 }
 
 .physio-item.selected {
-  background: #eef2ff;
-  border-color: #6366f1;
-  font-weight: 500;
+  background: #eff6ff;
+  border-color: #4f46e5;
+  color: #1d4ed8;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.15);
 }
 
 .check {
-  color: #4f46e5;
-  font-weight: bold;
+  color: #2563eb;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
-
-/* ===============================
-   BUTTON
-=================================*/
+/* ── Primary submit button ── */
 .primary-btn {
   width: 100%;
-  padding: 14px;
+  padding: 14px 20px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(to right, #2563eb, #4f46e5);
-  color: white;
-  font-weight: 600;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
-  transition: 0.25s ease;
-  font-size: 15px;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  margin-top: 8px;
 }
 
 .primary-btn:hover {
+  box-shadow: #4f46e5;
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
 }
 
 .primary-btn:active {
   transform: scale(0.98);
 }
 
-
-/* ===============================
-   COLLABORATION GRID
-=================================*/
+/* ── Collaboration cards grid ── */
 .collab-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .collab-item {
-  padding: 20px;
+  padding: 20px 22px;
   border-radius: 14px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .collab-item:hover {
-  border-color: #6366f1;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+  border-color: #4f46e5;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
 }
 
 .collab-item h4 {
-  margin-bottom: 8px;
-  font-size: 16px;
-  color: #111827;
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .collab-item p {
-  font-size: 13px;
-  color: #6b7280;
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
-
-/* ===============================
-   BADGES
-=================================*/
+/* ── Engineer badges ── */
 .badge-container {
-  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 .badge {
   display: inline-block;
-  background: linear-gradient(to right, #2563eb, #4f46e5);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  margin: 4px 6px 0 0;
-  transition: 0.2s ease;
+  background: #4f46e5;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
 }
 
 .badge:hover {
   opacity: 0.85;
 }
 
+/* ── Empty state ── */
+.collab-empty {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.92rem;
+  padding: 8px 0;
+}
 
-/* ===============================
-   EMPTY STATE
-=====================
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .collab-page {
+    padding: 28px 16px 60px;
+  }
+
+  .collab-card {
+    padding: 26px 20px;
+  }
+
+  .collab-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .physio-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .collab-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .physio-grid {
+    grid-template-columns: 1fr;
+  }
+}

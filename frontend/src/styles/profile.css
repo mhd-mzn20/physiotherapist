@@ -576,3 +576,122 @@ button:disabled {
         width: 100%;
     }
 }
+
+/* ===========================
+   REVIEWS / EVALUATIONS
+=========================== */
+
+.reviews-section {
+    margin-bottom: 30px;
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.reviews-section h3 {
+    margin: 0;
+    color: #2d3436;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.overall-rating {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    background: linear-gradient(135deg, #f6c90e, #f0a500);
+    padding: 6px 14px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(246, 201, 14, 0.3);
+}
+
+.overall-rating-score {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: white;
+}
+
+.overall-rating-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.reviews-subtitle {
+    margin: 0 0 18px 0;
+    font-size: 0.82rem;
+    color: #b2bec3;
+    font-style: italic;
+}
+
+.no-reviews-text {
+    text-align: center;
+    color: #b2bec3;
+    font-style: italic;
+    margin: 15px 0;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.review-card {
+    padding: 20px;
+    background: white;
+    border: 2px solid #dfe6e9;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.review-card:hover {
+    border-color: #4834d4;
+    box-shadow: 0 4px 16px rgba(72, 52, 212, 0.1);
+}
+
+.review-stars {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.star {
+    font-size: 1.4rem;
+    color: #dfe6e9;
+    line-height: 1;
+}
+
+.star.filled {
+    color: #f6c90e;
+}
+
+.review-rating-num {
+    margin-left: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #636e72;
+}
+
+.review-comment {
+    margin: 0 0 10px 0;
+    color: #2d3436;
+    font-style: italic;
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+
+.review-date {
+    margin: 0;
+    color: #b2bec3;
+    font-size: 0.82rem;
+    font-weight: 500;
+}

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 
-import '../styles/components.css'
+
 import '../styles/add-user.css'
 
 function AddUser() {
@@ -84,88 +84,88 @@ function AddUser() {
 
   return (
     <>
-     
-      <div className="page-center page-add-user"> 
-        <div className="form-container">  
-       <button className="back-btn2" onClick={() => navigate('/portal')} style={{ marginBottom: '16px' , width: '160px' }}>
-           ←Back to Portal
-        </button >   
-          <h2>Add User</h2>
 
-          <form onSubmit={handleSubmit}>
-            <label>Full Name</label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter full name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
+      <div className="page-center page-add-user">
 
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
+        <button className="back-btn2" onClick={() => navigate('/portal')} style={{ marginBottom: '16px', width: '160px' }}>
+          ←Back to Portal
+        </button >
+        <h2>Add User</h2>
 
-            <label>Telephone</label>
-            <input
-              type="tel"
-              name="tel"
-              placeholder="Enter phone number"
-              value={form.tel}
-              onChange={handleChange}
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <label>Full Name</label>
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter full name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
 
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              placeholder="Enter username"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+          <label>Telephone</label>
+          <input
+            type="tel"
+            name="tel"
+            placeholder="Enter phone number"
+            value={form.tel}
+            onChange={handleChange}
+            required
+          />
 
-            <label>Role</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              required
-            >
-              <option value="">-- Select Role --</option>
-              <option value="physiotherapist">Physiotherapist</option>
-              <option value="biomedical_engineer">Biomedical Engineer</option>
-            </select>
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            value={form.username}
+            onChange={handleChange}
+            required
+          />
 
-            <button type="submit" disabled={loading}>
-              {loading ? 'Adding...' : 'Add User'}
-            </button>
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
 
-            <button type="button" onClick={handleCancel}>
-              Cancel
-            </button>
-          </form>
-        </div>
+          <label>Role</label>
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            required
+          >
+            <option value="">-- Select Role --</option>
+            <option value="physiotherapist">Physiotherapist</option>
+            <option value="biomedical_engineer">Biomedical Engineer</option>
+          </select>
+
+          <button type="submit" disabled={loading} className='btn-add'>
+            {loading ? 'Adding...' : 'Add User'}
+          </button>
+
+          <button type="button" onClick={handleCancel} className='btn-cancel'>
+            Cancel
+          </button>
+        </form>
+
       </div>
-     
+
     </>
   )
 }

@@ -83,7 +83,7 @@ function Portal() {
 
   const handleEditCancel = () => setEditingUser(null);
 
-  
+
   const handleLogout = () => {
     sessionStorage.clear();
     navigate('/login');
@@ -95,53 +95,15 @@ function Portal() {
 
     if (role === 'physiotherapist') {
       navigate(`/patients/${user.idUser}`);
-    } else if (role === 'biomedical_engineer')  {
+    } else if (role === 'biomedical_engineer') {
       navigate(`/patients-biomedical/${user.idUser}`);
     }
   };
 
   return (
-    <>
-      
+    <div className="portal-page">
 
-      <div className="container page-portal">
-        <h2>Admin Portal</h2>
-
-        <div className="buttons">
-         
-        <button
-  className="btn-secondary"
-  type="button"
-  onClick={() => navigate('/create-collaboration')}
->
-  🤝 Create Collaboration
-</button>
-
-<button
-  className="btn-secondary"
-  onClick={() => navigate('/add-user')}
->
-  ➕ Add User
-</button>
-
-<button
-  className="btn-secondary"
-  onClick={() => navigate('/admin-patients')}
->
-  🧑‍⚕️ All Patients
-</button>
-
-<button
-  className="btn-secondary"
-  onClick={handleLogout}
->
-  🚪 Logout
-</button>
-
-        </div>
-      </div>
-
-      <div className="container portal-users">
+      <div className="portal-users">
         <h3>Users</h3>
 
         <div className="portal-filter">
@@ -163,7 +125,7 @@ function Portal() {
               <th>Full Name</th>
               <th>Role</th>
               <th>Actions</th>
-            
+
             </tr>
           </thead>
 
@@ -175,37 +137,37 @@ function Portal() {
                 return (u.role || '').toLowerCase() === roleFilter;
               });
               return filtered.length === 0 ? (
-              <tr>
-                <td colSpan="3">No users found.</td>
-              </tr>
-            ) : (
-              filtered.map((user) => (
-                <tr key={user.idUser}>
-                  <td>{user.fullname}  </td>
-                  
-
-                  <td>
-                    <button className="role-button" onClick={() => handleRoleOpen(user)}>
-                      {user.role.replace('_', ' ')}
-                    </button>
-                  </td>
-
-                  <td>
-                    <div className="portal-actions">
-                      
-                      <button className="btn-secondary" onClick={() => handleEdit(user)}>
-  ✏️
-</button>
-<button className="btn-secondary" onClick={() => handleDelete(user.idUser)}>
-  🗑️
-</button>
-
-                    </div>
-                  </td>
-                
+                <tr>
+                  <td colSpan="3">No users found.</td>
                 </tr>
-              ))
-            );
+              ) : (
+                filtered.map((user) => (
+                  <tr key={user.idUser}>
+                    <td>{user.fullname}  </td>
+
+
+                    <td>
+                      <button className="role-button" onClick={() => handleRoleOpen(user)}>
+                        {user.role.replace('_', ' ')}
+                      </button>
+                    </td>
+
+                    <td>
+                      <div className="portal-actions">
+
+                        <button className="btn-secondary" onClick={() => handleEdit(user)}>
+                          ✏️
+                        </button>
+                        <button className="btn-secondary" onClick={() => handleDelete(user.idUser)}>
+                          🗑️
+                        </button>
+
+                      </div>
+                    </td>
+
+                  </tr>
+                ))
+              );
             })()}
           </tbody>
         </table>
@@ -281,8 +243,8 @@ function Portal() {
         </div>
       )}
 
-      
-    </>
+
+    </div>
   );
 }
 
