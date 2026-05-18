@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 function Patients() {
   const { idUser } = useParams() // physiotherapist id
   const navigate = useNavigate()
+  const isAdmin = sessionStorage.getItem('role') === 'admin'
 
   const [patients, setPatients] = useState([])
   const [filterText, setFilterText] = useState('')

@@ -102,7 +102,7 @@ app.post('/api/users', async (req, res) => {
     return res.status(400).json({ message: 'All fields required' })
 
   db.query(
-    'SELECT * FROM users WHERE username = ? OR email = ?',
+    'SELECT * FROM users WHERE username = ? OR email = ? ',
     [username, email],
     async (err, results) => {
       if (err) return res.status(500).json({ message: 'Database error' })
@@ -1165,9 +1165,12 @@ app.post('/api/update-appointment-status', (req, res) => {
 app.get('/api/profile/:idUser', (req, res) => {
   const sql = `
         SELECT u.fullname, u.email, u.telephone, 
-               p.bio,  p.experience, p.image, p.rating
+               p.bio,  p.experience, p.image, p.rating,GROUP_CONCAT(s.title) as service
+              
         FROM users u
         LEFT JOIN profile p ON u.idUser = p.idUser
+        JOIN physio_services ps ON u.idUser = ps.idUser
+        JOIN services s ON ps.idService = s.idService
         WHERE u.idUser = ?`;
 
   db.query(sql, [req.params.idUser], (err, results) => {

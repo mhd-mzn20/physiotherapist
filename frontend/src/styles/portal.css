@@ -20,6 +20,37 @@
   color: #0f172a;
 }
 
+.portal-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.portal-filter label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.portal-filter select {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: #1f2937;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portal-filter select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
 .portal-users table {
   margin-top: 0;
   width: 100%;

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate,useParams} from 'react-router-dom';
 import '../styles/physioHeader.css';
 
 const PhysioHeader = () => {
     const navigate = useNavigate();
-    const idUser = sessionStorage.getItem('idUser');
+    const {idUser} = useParams();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const isAdmin = sessionStorage.getItem('role') == 'admin';
     const handleLogout = () => {
         sessionStorage.clear();
         navigate('/login');
@@ -25,6 +25,9 @@ const PhysioHeader = () => {
                     <p>Physiotherapist Portal</p>
                 </div>
             </div>
+            <button className={isAdmin ? 'shown' : 'hidden'} onClick={() => navigate(-1) }>
+                Go Back
+            </button>
 
             {/* Mobile menu toggle */}
             <button className="ph-mobile-toggle" onClick={toggleMenu}>
@@ -40,7 +43,7 @@ const PhysioHeader = () => {
                      Patients
                 </NavLink>
                 <NavLink 
-                    to="/availability" 
+                    to={`/availability/${idUser}`} 
                     className={({ isActive }) => (isActive ? 'ph-nav-link active' : 'ph-nav-link')}
                     onClick={() => setIsMenuOpen(false)}
                 >
@@ -48,7 +51,7 @@ const PhysioHeader = () => {
                 </NavLink>
                 
                 <NavLink 
-                    to="/physio-dashboard" 
+                    to={`/physio-dashboard/${idUser}`} 
                     className={({ isActive }) => (isActive ? 'ph-nav-link active' : 'ph-nav-link')}
                     onClick={() => setIsMenuOpen(false)}
                 >
@@ -56,7 +59,7 @@ const PhysioHeader = () => {
                 </NavLink>
 
                 <NavLink 
-                    to="/physioprofile" 
+                    to={`/physioprofile/${idUser}`} 
                     className={({ isActive }) => (isActive ? 'ph-nav-link active' : 'ph-nav-link')}
                     onClick={() => setIsMenuOpen(false)}
                 >

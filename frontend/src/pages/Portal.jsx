@@ -7,6 +7,7 @@ import '../styles/portal.css';
 function Portal() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [roleFilter, setRoleFilter] = useState('all');
   const [editingUser, setEditingUser] = useState(null);
   const [editForm, setEditForm] = useState({
     fullname: '',
@@ -94,7 +95,7 @@ function Portal() {
 
     if (role === 'physiotherapist') {
       navigate(`/patients/${user.idUser}`);
-    } else if (role === 'biomedical_engineer' || role === 'admin')  {
+    } else if (role === 'biomedical_engineer')  {
       navigate(`/patients-biomedical/${user.idUser}`);
     }
   };
@@ -136,6 +137,19 @@ function Portal() {
       <div className="container portal-users">
         <h3>Users</h3>
 
+        <div className="portal-filter">
+          <label htmlFor="role-filter">Filter by Role:</label>
+          <select
+            id="role-filter"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="physiotherapist">Physiotherapist</option>
+            <option value="biomedical_engineer">Biomedical Engineer</option>
+          </select>
+        </div>
+
         <table>
           <thead>
             <tr>
@@ -147,12 +161,18 @@ function Portal() {
           </thead>
 
           <tbody>
-            {users.length === 0 ? (
+            {(() => {
+              const filtered = users.filter((u) => {
+                if ((u.role || '').toLowerCase() === 'admin') return false;
+                if (roleFilter === 'all') return true;
+                return (u.role || '').toLowerCase() === roleFilter;
+              });
+              return filtered.length === 0 ? (
               <tr>
                 <td colSpan="3">No users found.</td>
               </tr>
             ) : (
-              users.map((user) => (
+              filtered.map((user) => (
                 <tr key={user.idUser}>
                   <td>{user.fullname}  </td>
                   
@@ -178,7 +198,8 @@ function Portal() {
                 
                 </tr>
               ))
-            )}
+            );
+            })()}
           </tbody>
         </table>
       </div>

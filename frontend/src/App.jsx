@@ -70,6 +70,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+         <Route element={<ProtectedUserRoute />}>
         <Route path="/portal" element={<Portal />} /> {/* login to admin */}
         <Route path="/add-user" element={<AddUser />} />
         <Route path="/create-collaboration" element={<CreateCollaboration />} />
@@ -85,7 +86,7 @@ function App() {
           path="/biomedical/:idengineer/:idphysiotherapist/:idpatient"
           element={<Biomedical />}
         />
-
+        </Route>
 
 
 
@@ -110,9 +111,9 @@ function App() {
             <Route path="/therapy/:iduser/:idpatient/:idsession?" element={<Therapy />} />
 
             <Route path="*" element={<Navigate to="/login" replace />} />
-            <Route path="/availability" element={<Availability />} />
-            <Route path="/physio-dashboard" element={<PhysioDashboard />} />
-            <Route path="/physioprofile" element={<PhysioProfile />} />
+            <Route path="/availability/:idUser" element={<Availability />} />
+            <Route path="/physio-dashboard/:idUser" element={<PhysioDashboard />} />
+            <Route path="/physioprofile/:idUser" element={<PhysioProfile />} />
             <Route path="/treatement/:iduser/:idpatient" element={<TreatmentPlan />} />
             <Route path="/trainings/:idsession" element={<Trainings />} />
             <Route path="/visits/:iduser/:idpatient" element={<Visits />} />

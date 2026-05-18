@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/availability.css';
 
 
 const Availability = () => {
     const navigate = useNavigate();
     
-    // Get session data
-    const idUser = sessionStorage.getItem('idUser');
-    const userRole = sessionStorage.getItem('role');
+    // Get idUser from route params, fall back to sessionStorage
+    const { idUser: paramId } = useParams();
+    const idUser = paramId || sessionStorage.getItem('idUser');
     
     const getLocalToday = () => {
     const today = new Date();
@@ -33,13 +33,9 @@ const Availability = () => {
 ];
     useEffect(() => {
         // 1. Role-Based Access Control
-        if (!idUser || userRole !== 'physiotherapist') {
-            alert("Access Denied: This page is for Physiotherapists only.");
-            navigate('/dashboard');
-            return;
-        }
+        
         loadData();
-    }, [idUser, userRole, selectedDate, navigate]);
+    }, [idUser, selectedDate, navigate]);
 
     // Fetch current availability from DB
     const loadData = () => {

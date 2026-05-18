@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import '../styles/profile.css';
 
 const PhysioProfile = () => {
-    const idUser = sessionStorage.getItem('idUser');
+    const { idUser: paramId } = useParams();
+    const idUser = paramId || sessionStorage.getItem('idUser');
     const [isEditing, setIsEditing] = useState(false);
     const [isAddingExperience, setIsAddingExperience] = useState(false);
     const [editingExperienceId, setEditingExperienceId] = useState(null);

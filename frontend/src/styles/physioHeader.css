@@ -177,3 +177,19 @@
         cursor: pointer;
     }
 }
+
+.hidden{
+    display: none;
+}   
+.shown{
+    display: block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    border: 1px solid #fee2e2;
+    margin-left: 10px;
+    width: 120px;
+}

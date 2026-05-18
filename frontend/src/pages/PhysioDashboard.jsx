@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import './../styles/dashboard.css';
 
 const PhysioDashboard = () => {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const physioId = sessionStorage.getItem('idUser');
+    const { idUser: paramId } = useParams();
+    const physioId = paramId || sessionStorage.getItem('idUser');
 
     const fetchAppointments = async () => {
         if (!physioId) return;
