@@ -96,7 +96,7 @@ db.connect(err => {
 ========================= */
 
 app.post('/api/users', async (req, res) => {
-  const { fullname, email, telephone, username, password, role } = req.body
+  const { fullname, email, telephone, username, password, role, birthdate } = req.body
 
   if (!fullname || !email || !telephone || !username || !password || !role)
     return res.status(400).json({ message: 'All fields required' })
@@ -112,9 +112,9 @@ app.post('/api/users', async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, 10)
 
       db.query(
-        `INSERT INTO users (fullname, email, telephone, username, password, role)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [fullname, email, telephone, username, hashedPassword, role],
+        `INSERT INTO users (fullname, email, telephone, username, password, role, birthdate)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [fullname, email, telephone, username, hashedPassword, role, birthdate || null],
         (err, result) => {
           if (err) return res.status(500).json({ message: 'Insert error' })
           res.status(201).json({ userId: result.insertId })
@@ -207,7 +207,7 @@ app.delete('/api/users/:id', (req, res) => {
 //update user
 app.put('/api/users/:id', async (req, res) => {
   try {
-    const { fullname, email, telephone, username, password, role } = req.body
+    const { fullname, email, telephone, username, password, role, birthdate } = req.body
 
     let sql
     let values
@@ -218,20 +218,20 @@ app.put('/api/users/:id', async (req, res) => {
 
       sql = `
         UPDATE users 
-        SET fullname=?, email=?, telephone=?, username=?, password=?, role=? 
+        SET fullname=?, email=?, telephone=?, username=?, password=?, role=?, birthdate=? 
         WHERE idUser=?
       `
 
-      values = [fullname, email, telephone, username, hashedPassword, role, req.params.id]
+      values = [fullname, email, telephone, username, hashedPassword, role, birthdate || null, req.params.id]
     } else {
       // If password empty → do NOT change password
       sql = `
         UPDATE users 
-        SET fullname=?, email=?, telephone=?, username=?, role=? 
+        SET fullname=?, email=?, telephone=?, username=?, role=?, birthdate=? 
         WHERE idUser=?
       `
 
-      values = [fullname, email, telephone, username, role, req.params.id]
+      values = [fullname, email, telephone, username, role, birthdate || null, req.params.id]
     }
 
     db.query(sql, values, (err, result) => {
@@ -915,6 +915,9 @@ app.get('/api/biomedical/:idpatient', (req, res) => {
           idbiomedical: row.idbiomedical,
           visitdate: row.visitdate,
           testtype: row.testtype,
+          biomedicaltestID: row.biomedicaltestID,
+          test_name: row.test_name,
+          test_description: row.test_description,
           testvalue: row.testvalue,
           note: row.note,
           engineer_name: row.engineer_name,
@@ -1070,12 +1073,23 @@ app.put(
 // 1. Fetch Availability for a specific user
 app.get('/api/availability/:idUser', (req, res) => {
   const { idUser } = req.params;
-  // We only select slots where the status is 'available'
-  const sql = "SELECT * FROM availability WHERE idUser = ? AND status = 'available'";
 
-  db.query(sql, [idUser], (err, results) => {
-    if (err) return res.status(500).json(err);
-    res.json(results);
+  // First: mark any past 'available' slots as 'expired'
+  const expireSql = `
+    UPDATE availability
+    SET status = 'expired'
+    WHERE idUser = ? AND status = 'available' AND available_date < CURDATE()
+  `;
+
+  db.query(expireSql, [idUser], (expireErr) => {
+    if (expireErr) return res.status(500).json({ message: 'Error expiring old slots', error: expireErr });
+
+    // Then: return only the still-available slots
+    const sql = "SELECT * FROM availability WHERE idUser = ? AND status = 'available'";
+    db.query(sql, [idUser], (err, results) => {
+      if (err) return res.status(500).json(err);
+      res.json(results);
+    });
   });
 });
 
@@ -1491,7 +1505,7 @@ app.get('/physio', (req, res) => {
     SELECT u.idUser, u.fullname, p.rating, p.image, 
            GROUP_CONCAT(s.title SEPARATOR ', ') AS servicesList
     FROM users u
-    LEFT JOIN profile p ON u.idUser = p.idUser
+    INNER JOIN profile p ON u.idUser = p.idUser
     LEFT JOIN physio_services ps ON u.idUser = ps.idUser
     LEFT JOIN services s ON ps.idService = s.idService
     WHERE u.role = 'physiotherapist'
@@ -1983,8 +1997,8 @@ app.post('/api/services', (req, res) => {
     return res.status(400).json({ message: 'Title is required' });
   }
   db.query(
-    'INSERT INTO services (title, description, subDesc, icon) VALUES (?, ?, ?, ?)', 
-    [title.trim(), description || null, subDesc || null, icon || null], 
+    'INSERT INTO services (title, description, subDesc, icon) VALUES (?, ?, ?, ?)',
+    [title.trim(), description || null, subDesc || null, icon || null],
     (err, result) => {
       if (err) return res.status(500).json({ message: 'Database error', error: err });
       res.status(201).json({ idService: result.insertId, title: title.trim(), description, subDesc, icon });
@@ -2038,6 +2052,18 @@ app.get('/api/evaluations/:idUser', (req, res) => {
   db.query(sql, [req.params.idUser], (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error', error: err });
     res.json(results);
+  });
+});
+
+
+
+// DELETE a treatment plan
+app.delete('/api/treatment-plans/:idplan', (req, res) => {
+  const sql = 'DELETE FROM treatment_plan WHERE idPlan = ?';
+  db.query(sql, [req.params.idplan], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: 'Database error', error: err });
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Treatment plan not found' });
+    res.json({ success: true, message: 'Treatment plan deleted' });
   });
 });
 

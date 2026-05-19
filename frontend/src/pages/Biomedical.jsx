@@ -89,13 +89,8 @@ function Biomedical() {
     fetchRecords()
   }, [idpatient])
 
-  /* =========================
-     Image preview
-  ========================= */
-  const handleImagePreview = files => {
-    const previews = Array.from(files).map(f => URL.createObjectURL(f))
-    setPreviewImages(prev => [...prev, ...previews])
-  }
+
+
 
   /* =========================
      Submit form (add/update)
@@ -249,7 +244,6 @@ function Biomedical() {
                 <th>Test Value</th>
                 <th>Notes</th>
                 <th>Engineer</th>
-                <th>Files</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -257,21 +251,10 @@ function Biomedical() {
               {biomedicalRecords.map(record => (
                 <tr key={record.idbiomedical}>
                   <td>{record.visitdate ? new Date(record.visitdate).toISOString().split('T')[0] : ''}</td>
-                  <td>{record.test_name || record.test_description}</td>
+                  <td>{record.test_name || record.test_description || record.testtype || '—'}</td>
                   <td>{record.testvalue}</td>
                   <td>{record.note}</td>
                   <td>{record.engineer_name}</td>
-                  <td>
-                    {record.files.map(f => (
-                      <div key={f.idfile}>
-                        {f.filetype === 'csv' ? (
-                          <a href={`http://localhost:5001/uploads/${f.filename}`} target="_blank">{f.filename}</a>
-                        ) : (
-                          <img src={`http://localhost:5001/uploads/${f.filename}`} width="50" />
-                        )}
-                      </div>
-                    ))}
-                  </td>
                   <td>
                     <button
                       onClick={() => handleEdit(record)}

@@ -19,18 +19,7 @@ function SessionsBiomedical() {
      AUTH CHECK
   ========================= */
   useEffect(() => {
-    const loggedId = sessionStorage.getItem('idUser');
-    const role = sessionStorage.getItem('role');
-
-    // Allow admin to view any biomedical engineer's patient sessions
-    // or biomedical engineer to view their own patients
-    if (
-      !loggedId ||
-      !(
-        role === 'admin' ||
-        (role === 'biomedical_engineer' && loggedId === idBiomedical)
-      )
-    ) {
+    if (!idBiomedical) {
       navigate('/login');
     }
   }, [navigate, idBiomedical]);
@@ -108,31 +97,6 @@ function SessionsBiomedical() {
     fetchSessions();
   }, [idpatient]);
 
-  /* =========================
-     DELETE SESSION
-  ========================= */
-  const deleteSession = async (idsession) => {
-    const role = sessionStorage.getItem('role');
-    if (role === 'biomedical_engineer') {
-      alert('You are not allowed to delete sessions');
-      return;
-    }
-
-    if (!window.confirm('Delete this session?')) return;
-
-    try {
-      await fetch(`http://localhost:5001/api/sessions/${idsession}`, {
-        method: 'DELETE',
-        headers: {
-          'x-user-role': role || '',
-        },
-      });
-      setSessions(prev => prev.filter(s => s.idsession !== idsession));
-    } catch (err) {
-      console.error(err);
-      alert('Error deleting session');
-    }
-  };
 
   return (
     <>
@@ -157,14 +121,14 @@ function SessionsBiomedical() {
                 <th>Protocol</th>
                 <th>Remark</th>
                 <th>Videos</th>
-                {sessionStorage.getItem('role') !== 'biomedical_engineer' && <th>Actions</th>}
+                
               </tr>
             </thead>
 
             <tbody>
               {sessions.length === 0 ? (
                 <tr>
-                  <td colSpan={sessionStorage.getItem('role') !== 'biomedical_engineer' ? "7" : "6"}>No sessions found.</td>
+                  <td colSpan="7">No sessions found.</td>
                 </tr>
               ) : (
                 sessions.map(session => (
@@ -191,17 +155,7 @@ function SessionsBiomedical() {
                         <em>No videos</em>
                       )}
                     </td>
-                    {sessionStorage.getItem('role') !== 'biomedical_engineer' && (
-                      <td>
-                        <button
-                          className="action-btn action-btn--delete"
-                          onClick={() => deleteSession(session.idsession)}
-                          aria-label="Delete session"
-                        >
-                          🗑️
-                        </button>
-                      </td>
-                    )}
+                  
                   </tr>
                 ))
               )}

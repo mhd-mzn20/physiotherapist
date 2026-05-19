@@ -89,7 +89,12 @@ function App() {
             <Route path="/admin-patients" element={<AdminPatients />} />
             <Route path="/admin-services" element={<AdminServices />} />
 
-            {/*biomedical */}
+          
+          </Route>
+        </Route>
+
+
+  {/*biomedical */}
             <Route path="/patients-biomedical/:idUser" element={<PatientsBiomedical />} />
             <Route
               path="/sessions-biomedical/:idBiomedical/:idPhysiotherapist/:idpatient"
@@ -99,11 +104,6 @@ function App() {
               path="/biomedical/:idengineer/:idphysiotherapist/:idpatient"
               element={<Biomedical />}
             />
-          </Route>
-        </Route>
-
-
-
 
 
         <Route element={<PhysioLayout />}>

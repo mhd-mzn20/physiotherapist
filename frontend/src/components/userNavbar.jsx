@@ -74,13 +74,7 @@ function UserNavbar() {
                 </NavLink>
 
                 {/* Mobile-only: appointments + welcome + logout */}
-                <Link
-                    to="/patient-reservations"
-                    className="un-appointments-mobile"
-                    onClick={closeMenu}
-                >
-                    My Appointments
-                </Link>
+              
                 <button className="un-logout-mobile" onClick={handleLogout}>
                     Logout
                 </button>

@@ -235,242 +235,212 @@ const updateNewExperienceField = (field, value) => {
     return (
         <div className="profile-wrapper">
             <div className="profile-header-card">
-                <div className="image-section">
-                    <img src={getImageUrl()} alt="Profile" className="profile-img-large" />
-                    {isEditing && (
-                        <label className="upload-overlay">
-                            <input type="file" onChange={handleFileChange} accept="image/*" hidden />
-                            <div className="change-photo-btn">Change Photo</div>
-                        </label>
-                    )}
+
+                {/* ── LEFT SIDEBAR ── */}
+                <div className="profile-sidebar">
+                    <div className="image-section">
+                        <img src={getImageUrl()} alt="Profile" className="profile-img-large" />
+                        {isEditing && (
+                            <label className="upload-overlay">
+                                <input type="file" onChange={handleFileChange} accept="image/*" hidden />
+                                <div className="change-photo-btn">✎</div>
+                            </label>
+                        )}
+                    </div>
+
+                    <h1>
+                        {isEditing ? (
+                            <input name="fullname" value={profile.fullname} onChange={handleInputChange} placeholder="Full Name" />
+                        ) : (
+                            profile.fullname
+                        )}
+                    </h1>
+
+                    <div className="sidebar-details">
+                        <div className="sidebar-detail-item">
+                            <strong>Experience</strong>
+                            {isEditing ? (
+                                <input
+                                    type="number"
+                                    name="experience"
+                                    value={profile.experience}
+                                    onChange={handleInputChange}
+                                    min="0"
+                                    placeholder="Years"
+                                />
+                            ) : (
+                                <span>{profile.experience} years</span>
+                            )}
+                        </div>
+
+                        <div className="sidebar-detail-item">
+                            <strong>Telephone</strong>
+                            {isEditing ? (
+                                <input
+                                    type="tel"
+                                    name="telephone"
+                                    value={profile.telephone}
+                                    onChange={handleInputChange}
+                                    placeholder="Phone number"
+                                />
+                            ) : (
+                                <span>{profile.telephone || '—'}</span>
+                            )}
+                        </div>
+                    </div>
+
+                    <button
+                        className="main-action-btn"
+                        onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                    >
+                        {isEditing ? '💾 Save Profile' : '✏️ Edit Profile'}
+                    </button>
                 </div>
-                <div></div>
-                <h1>
-                    {isEditing ? (
-                        <input name="fullname" value={profile.fullname} onChange={handleInputChange} />
-                    ) : (
-                        profile.fullname
-                    )}
-                </h1>
 
-                <div className="profile-details">
-                    <div className="detail-item">
-                        <strong>Experience:</strong>
-                        {isEditing ? (
-                            <input 
-                                type="number" 
-                                name="experience" 
-                                value={profile.experience} 
-                                onChange={handleInputChange}
-                                min="0"
-                                placeholder="Years of experience"
-                            />
-                        ) : (
-                            <span>{profile.experience} years</span>
-                        )}
-                    </div>
-                    
-                    <div className="detail-item">
-                        <strong>Telephone:</strong>
-                        {isEditing ? (
-                            <input 
-                                type="tel" 
-                                name="telephone" 
-                                value={profile.telephone} 
-                                onChange={handleInputChange}
-                                placeholder="Phone number"
-                            />
-                        ) : (
-                            <span>{profile.telephone}</span>
-                        )}
-                    </div>
+                {/* ── RIGHT MAIN CONTENT ── */}
+                <div className="profile-main">
 
-                    <div className="detail-item bio-item">
-                        <strong>Bio:</strong>
+                    {/* Bio */}
+                    <div className="bio-section">
+                        <strong>About</strong>
                         {isEditing ? (
                             <textarea
                                 name="bio"
                                 value={profile.bio}
                                 onChange={handleInputChange}
                                 placeholder="Write a short bio about yourself"
-                                rows="4"
+                                rows="3"
                             />
                         ) : (
                             <span>{profile.bio || 'No bio available yet.'}</span>
                         )}
                     </div>
 
-                
-                </div>
-
-                <div className="services-selector">
-                    <h3>Services</h3>
-                    {isEditing ? (
-                        allServices.map(service => {
-                            const selected = profile.services.find(s => s.idService === service.idService);
-                            return (
-                                <div key={service.idService} className="service-row">
-                                    <input type="checkbox" checked={!!selected} onChange={() => handleCheckboxChange(service)} />
-                                    <span>{service.title}</span>
-                                    {selected && (
-                                        <input type="number" placeholder="Price" value={selected.price} onChange={(e) => handlePriceChange(service.idService, e.target.value)} />
-                                    )}
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <p>{profile.services.map(s => `${s.title} ($${s.price})`).join(', ')}</p>
-                    )}
-                </div>
-
-                <div className="experience-section">
-                    <div className="experience-header">
-                        <h3>Work Experience</h3>
-                        {isEditing && (
-                            <button className="add-exp-btn" onClick={() => setIsAddingExperience(!isAddingExperience)}>
-                                {isAddingExperience ? "Cancel" : "+ Add Experience"}
-                            </button>
+                    {/* Services */}
+                    <div className="services-selector">
+                        <h3>Services</h3>
+                        {isEditing ? (
+                            <div className="services-grid">
+                                {allServices.map(service => {
+                                    const selected = profile.services.find(s => s.idService === service.idService);
+                                    return (
+                                        <div key={service.idService} className="service-row">
+                                            <input type="checkbox" checked={!!selected} onChange={() => handleCheckboxChange(service)} />
+                                            <span>{service.title}</span>
+                                            {selected && (
+                                                <input type="number" placeholder="Price" value={selected.price} onChange={(e) => handlePriceChange(service.idService, e.target.value)} />
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <p>{profile.services.length > 0 ? profile.services.map(s => `${s.title} ($${s.price})`).join(' · ') : 'No services listed.'}</p>
                         )}
                     </div>
 
-                    {isAddingExperience && (
-                        <div className="experience-form">
-                            <input 
-                                type="text" 
-                                placeholder="Job Title" 
-                                value={newExperience.title}
-                                onChange={(e) => updateNewExperienceField('title', e.target.value)}
-                            />
-                            <input 
-                                type="text" 
-                                placeholder="Company" 
-                                value={newExperience.company}
-                                onChange={(e) => updateNewExperienceField('company', e.target.value)}
-                            />
-                            <input 
-                                type="date" 
-                                value={newExperience.start_date}
-                                max={new Date().toISOString().split('T')[0]}
-                                onChange={(e) => updateNewExperienceField('start_date', e.target.value)}
-                            />
-                            <input 
-                                type="date" 
-                                value={newExperience.end_date}
-                                onChange={(e) => updateNewExperienceField('end_date', e.target.value)}
-                            />
-                            <textarea 
-                                placeholder="Description (optional)" 
-                                value={newExperience.description}
-                                onChange={(e) => updateNewExperienceField('description', e.target.value)}
-                                rows="3"
-                            />
-                            <button className="save-exp-btn" onClick={handleAddExperience}>Save Experience</button>
-                        </div>
-                    )}
+                    {/* Experience + Reviews side by side */}
+                    <div className="bottom-grid">
 
-                    {experiences.length > 0 ? (
-                        <div className="experiences-list">
-                            {experiences.map(exp => (
-                                <div key={exp.id} className="experience-card">
-                                    {editingExperienceId === exp.id ? (
-                                        <div className="experience-form">
-                                            <input 
-                                                type="text" 
-                                                value={exp.title}
-                                                onChange={(e) => updateExperienceField(exp.id, 'title', e.target.value)}
-                                            />
-                                            <input 
-                                                type="text" 
-                                                value={exp.company}
-                                                onChange={(e) => updateExperienceField(exp.id, 'company', e.target.value)}
-                                            />
-                                            <input 
-                                                type="date" 
-                                                value={exp.start_date}
-                                                max={new Date().toISOString().split('T')[0]}
-                                                onChange={(e) => updateExperienceField(exp.id, 'start_date', e.target.value)}
-                                            />
-                                            <input 
-                                                type="date" 
-                                                value={exp.end_date || ''}
-                                                onChange={(e) => updateExperienceField(exp.id, 'end_date', e.target.value)}
-                                            />
-                                            <textarea 
-                                                value={exp.description}
-                                                onChange={(e) => updateExperienceField(exp.id, 'description', e.target.value)}
-                                                rows="3"
-                                            />
-                                            <button className="save-exp-btn" onClick={() => handleUpdateExperience(exp.id)}>Save</button>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="exp-title-row">
-                                                <div>
-                                                    <h4>{exp.title}</h4>
-                                                    <p className="exp-company">{exp.company}</p>
+                        {/* Work Experience */}
+                        <div className="experience-section">
+                            <div className="experience-header">
+                                <h3>Work Experience</h3>
+                                {isEditing && (
+                                    <button className="add-exp-btn" onClick={() => setIsAddingExperience(!isAddingExperience)}>
+                                        {isAddingExperience ? 'Cancel' : '+ Add'}
+                                    </button>
+                                )}
+                            </div>
+
+                            {isAddingExperience && (
+                                <div className="experience-form">
+                                    <input type="text" placeholder="Job Title" value={newExperience.title} onChange={(e) => updateNewExperienceField('title', e.target.value)} />
+                                    <input type="text" placeholder="Company" value={newExperience.company} onChange={(e) => updateNewExperienceField('company', e.target.value)} />
+                                    <input type="date" value={newExperience.start_date} max={new Date().toISOString().split('T')[0]} onChange={(e) => updateNewExperienceField('start_date', e.target.value)} />
+                                    <input type="date" value={newExperience.end_date} onChange={(e) => updateNewExperienceField('end_date', e.target.value)} />
+                                    <textarea placeholder="Description (optional)" value={newExperience.description} onChange={(e) => updateNewExperienceField('description', e.target.value)} rows="2" />
+                                    <button className="save-exp-btn" onClick={handleAddExperience}>Save</button>
+                                </div>
+                            )}
+
+                            {experiences.length > 0 ? (
+                                <div className="experiences-list">
+                                    {experiences.map(exp => (
+                                        <div key={exp.id} className="experience-card">
+                                            {editingExperienceId === exp.id ? (
+                                                <div className="experience-form">
+                                                    <input type="text" value={exp.title} onChange={(e) => updateExperienceField(exp.id, 'title', e.target.value)} />
+                                                    <input type="text" value={exp.company} onChange={(e) => updateExperienceField(exp.id, 'company', e.target.value)} />
+                                                    <input type="date" value={exp.start_date} max={new Date().toISOString().split('T')[0]} onChange={(e) => updateExperienceField(exp.id, 'start_date', e.target.value)} />
+                                                    <input type="date" value={exp.end_date || ''} onChange={(e) => updateExperienceField(exp.id, 'end_date', e.target.value)} />
+                                                    <textarea value={exp.description} onChange={(e) => updateExperienceField(exp.id, 'description', e.target.value)} rows="2" />
+                                                    <button className="save-exp-btn" onClick={() => handleUpdateExperience(exp.id)}>Save</button>
                                                 </div>
-                                                {isEditing && (
-                                                    <div className="exp-actions">
-                                                        <button className="edit-btn" onClick={() => setEditingExperienceId(exp.id)}>Edit</button>
-                                                        <button className="delete-btn" onClick={() => handleDeleteExperience(exp.id)}>Delete</button>
+                                            ) : (
+                                                <>
+                                                    <div className="exp-title-row">
+                                                        <div>
+                                                            <h4>{exp.title}</h4>
+                                                            <p className="exp-company">{exp.company}</p>
+                                                        </div>
+                                                        {isEditing && (
+                                                            <div className="exp-actions">
+                                                                <button className="edit-btn" onClick={() => setEditingExperienceId(exp.id)}>Edit</button>
+                                                                <button className="delete-btn" onClick={() => handleDeleteExperience(exp.id)}>Del</button>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                )}
+                                                    <p className="exp-date">
+                                                        {new Date(exp.start_date).toLocaleDateString()}
+                                                        {exp.end_date ? ` – ${new Date(exp.end_date).toLocaleDateString()}` : ' – Present'}
+                                                    </p>
+                                                    {exp.description && <p className="exp-description">{exp.description}</p>}
+                                                </>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="no-exp-text">No work experience added yet</p>
+                            )}
+                        </div>
+
+                        {/* Patient Reviews */}
+                        <div className="reviews-section">
+                            <div className="reviews-header">
+                                <h3>⭐ Patient Reviews</h3>
+                                <div className="overall-rating">
+                                    <span className="overall-rating-score">{Number(profile.rating).toFixed(1)}</span>
+                                    <span className="overall-rating-label">/ 5</span>
+                                </div>
+                            </div>
+                            <p className="reviews-subtitle">Most recent 5 reviews</p>
+                            {reviews.length === 0 ? (
+                                <p className="no-reviews-text">No reviews yet.</p>
+                            ) : (
+                                <div className="reviews-list">
+                                    {reviews.map((review, idx) => (
+                                        <div key={idx} className="review-card">
+                                            <div className="review-stars">
+                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                    <span key={i} className={i < review.rating ? 'star filled' : 'star'}>★</span>
+                                                ))}
+                                                <span className="review-rating-num">{review.rating}/5</span>
                                             </div>
-                                            <p className="exp-date">
-                                                {new Date(exp.start_date).toLocaleDateString()} 
-                                                {exp.end_date ? ` - ${new Date(exp.end_date).toLocaleDateString()}` : ' - Present'}
+                                            {review.comment && <p className="review-comment">&ldquo;{review.comment}&rdquo;</p>}
+                                            <p className="review-date">
+                                                {new Date(review.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                                             </p>
-                                            {exp.description && <p className="exp-description">{exp.description}</p>}
-                                        </>
-                                    )}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                         </div>
-                    ) : (
-                        <p className="no-exp-text">No work experience added yet</p>
-                    )}
-                </div>
 
-                <div className="reviews-section">
-                    <div className="reviews-header">
-                        <h3>⭐ Patient Reviews</h3>
-                        <div className="overall-rating">
-                            <span className="overall-rating-score">{Number(profile.rating).toFixed(1)}</span>
-                            <span className="overall-rating-label">/ 5 overall</span>
-                        </div>
-                    </div>
-                    <p className="reviews-subtitle">Showing the 5 most recent reviews</p>
-                    {reviews.length === 0 ? (
-                        <p className="no-reviews-text">No reviews yet.</p>
-                    ) : (
-                        <div className="reviews-list">
-                            {reviews.map((review, idx) => (
-                                <div key={idx} className="review-card">
-                                    <div className="review-stars">
-                                        {Array.from({ length: 5 }).map((_, i) => (
-                                            <span key={i} className={i < review.rating ? 'star filled' : 'star'}>
-                                                ★
-                                            </span>
-                                        ))}
-                                        <span className="review-rating-num">{review.rating}/5</span>
-                                    </div>
-                                    {review.comment && (
-                                        <p className="review-comment">&ldquo;{review.comment}&rdquo;</p>
-                                    )}
-                                    <p className="review-date">
-                                        {new Date(review.created_at).toLocaleDateString('en-US', {
-                                            year: 'numeric', month: 'long', day: 'numeric'
-                                        })}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                    </div>{/* end bottom-grid */}
+                </div>{/* end profile-main */}
 
-                <button onClick={isEditing ? handleSave : () => setIsEditing(true)}>
-                    {isEditing ? "Save Profile" : "Edit Profile"}
-                </button>
             </div>
         </div>
     );

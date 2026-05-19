@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-
+import { useParams, useNavigate } from 'react-router-dom';
+  
 import '../styles/components.css';
 import '../styles/biomedical.css';
 
 function BiomedicalView() {
   const { idpatient } = useParams();
   const idphysio = sessionStorage.getItem('idUser');
+  const navigate = useNavigate();
   const [patientName, setPatientName] = useState('');
   const [physioName, setPhysioName] = useState('');
   const [biomedicalRecords, setBiomedicalRecords] = useState([]);
@@ -115,9 +116,7 @@ function BiomedicalView() {
           </table>
         )}
 
-        <Link to={`/patients/${idphysio}`} className="back-btn">
-          ← Back to Patients
-        </Link>
+        <button onClick={() => navigate(-1)}>Back to Patients</button>
       </div>
      
     </>

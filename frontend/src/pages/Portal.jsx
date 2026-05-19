@@ -16,6 +16,7 @@ function Portal() {
     username: '',
     password: '',
     role: '',
+    birthdate: '',
   });
 
   // ✅ Protect route: only admin
@@ -60,6 +61,7 @@ function Portal() {
       username: user.username || '',
       password: '',
       role: user.role || '',
+      birthdate: user.birthdate ? user.birthdate.split('T')[0] : '',
     });
   };
 
@@ -206,7 +208,7 @@ function Portal() {
               <input
                 type="text"
                 value={editForm.username}
-                onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                onChange={(e) => setEditForm({ ...editForm, username: e.target.value.replace(/\s/g, '') })}
                 required
               />
 
@@ -229,6 +231,14 @@ function Portal() {
                 <option value="biomedical_engineer">Biomedical Engineer</option>
                 <option value="admin">Admin</option>
               </select>
+
+              <label>Birthdate</label>
+              <input
+                type="date"
+                max={new Date().toISOString().split('T')[0]}
+                value={editForm.birthdate}
+                onChange={(e) => setEditForm({ ...editForm, birthdate: e.target.value })}
+              />
 
               <div className="buttons">
                 <button className="btn-primary" type="submit">

@@ -17,38 +17,24 @@ function calculateAge(birthdate) {
 }
 
 function PatientsBiomedical() {
-  const { idUser } = useParams(); // optional URL param
+  const { idUser } = useParams(); // biomedical engineer's ID from the URL
   const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   const [bioName, setBioName] = useState('Biomedical Engineer');
   const [bioId, setBioId] = useState(null);
-
+  const isAdmin = sessionStorage.getItem('role') == 'admin';
   useEffect(() => {
-    const loginId = sessionStorage.getItem('idUser'); // logged-in user
-    const role = sessionStorage.getItem('role');
-
-    let biomedicalId;
-
-    // Admin can view any biomedical engineer's patients
-    if (role === 'admin' && idUser) {
-      biomedicalId = idUser;
-    }
-    // Biomedical engineer sees their own patients
-    else if (role === 'biomedical_engineer') {
-      biomedicalId = loginId;
-    }
-    // Not authorized
-    else {
+    if (!idUser) {
       navigate('/login');
       return;
     }
 
-    setBioId(biomedicalId);
+    setBioId(idUser);
 
     const fetchPatients = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5001/api/biomedical-patients/${biomedicalId}`
+          `http://localhost:5001/api/biomedical-patients/${idUser}`
         );
         const data = await response.json();
         const patientsWithAge = data.map((p) => ({
@@ -63,7 +49,7 @@ function PatientsBiomedical() {
 
     const fetchBioName = async () => {
       try {
-        const response = await fetch(`http://localhost:5001/api/users/${biomedicalId}`);
+        const response = await fetch(`http://localhost:5001/api/users/${idUser}`);
         const data = await response.json();
         setBioName(data.fullname || 'Biomedical Engineer');
       } catch (err) {
@@ -99,7 +85,11 @@ function PatientsBiomedical() {
     <>
       
       <div className="container page-patients-biomedical">
+        <button className={isAdmin ? 'showne' : 'hidden'} onClick={() => navigate('/portal') }>
+                Go Back
+            </button>
         <div className="header-container">
+           
           <h1>
             <u className='center'>Biomedical Engineer :</u> <br />
             {bioName}

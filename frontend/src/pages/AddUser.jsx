@@ -15,6 +15,7 @@ function AddUser() {
     username: '',
     password: '',
     role: '',
+    birthdate: '',
   })
 
   const [loading, setLoading] = useState(false)
@@ -49,6 +50,7 @@ function AddUser() {
           username: form.username.trim(),
           password: form.password.trim(),
           role: form.role,
+          birthdate: form.birthdate || null,
         }),
       })
 
@@ -67,6 +69,7 @@ function AddUser() {
         username: '',
         password: '',
         role: '',
+        birthdate: '',
       })
 
       navigate('/portal')
@@ -154,6 +157,15 @@ function AddUser() {
             <option value="physiotherapist">Physiotherapist</option>
             <option value="biomedical_engineer">Biomedical Engineer</option>
           </select>
+
+          <label>Birthdate</label>
+          <input
+            type="date"
+            max={new Date().toISOString().split('T')[0]}  
+            name="birthdate"
+            value={form.birthdate}
+            onChange={handleChange}
+          />
 
           <button type="submit" disabled={loading} className='btn-add'>
             {loading ? 'Adding...' : 'Add User'}

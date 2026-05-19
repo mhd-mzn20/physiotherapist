@@ -93,6 +93,21 @@ const TreatmentPlan = () => {
         });
     };
 
+    const handleDelete = async (plan) => {
+        const planId = normalizePlanId(plan);
+        if (!window.confirm('Are you sure you want to delete this treatment plan?')) return;
+        try {
+            const res = await fetch(`http://localhost:5001/api/treatment-plans/${planId}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Delete failed');
+            await fetchPlans();
+        } catch (error) {
+            console.error('Failed to delete treatment plan:', error);
+            alert('Failed to delete treatment plan.');
+        }
+    };
+
     return (
         <div className="treatment-container">
             <button className="back-btn2" onClick={() => navigate(-1)}>
@@ -169,7 +184,10 @@ const TreatmentPlan = () => {
                                 <span>📅 {new Date(plan.start_date).toLocaleDateString()}</span>
                                 <span>🏁 {new Date(plan.end_date).toLocaleDateString()}</span>
                             </div>
-                            <button onClick={() => startEdit(plan)} className="btn-edit">Edit</button>
+                            <div className="card-actions">
+                                <button onClick={() => startEdit(plan)} className="btn-edit">Edit</button>
+                                <button onClick={() => handleDelete(plan)} className="btn-delete">Delete</button>
+                            </div>
                         </div>
                     );
                 })}

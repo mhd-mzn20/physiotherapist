@@ -72,6 +72,7 @@ select:focus {
 }
 
 button {
+  color: white;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   border: none;
@@ -79,6 +80,7 @@ button {
   font-size: 14px;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  background: linear-gradient(120deg, #4f46e5, #4338ca);
 }
 
 button:hover {
@@ -90,10 +92,12 @@ button:hover {
   display: flex;
   gap: 12px;
   margin-top: 18px;
+  
 }
 
 .buttons button {
   width: 100%;
+ 
 }
 
 .btn-primary {

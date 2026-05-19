@@ -72,7 +72,6 @@ const ViewPhysioProfile = () => {
                     </div>
 
                     <div className="profile-right">
-                        <span className="specialty-label">{formatServiceNames(physio.service)}</span>
                         <h1>Dr. {physio.fullname}</h1>
                        
 
